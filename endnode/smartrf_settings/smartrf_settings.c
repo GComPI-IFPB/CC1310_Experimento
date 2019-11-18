@@ -93,10 +93,12 @@ uint32_t pOverrides[] =
     // override_phy_rx_rssi_offset_5db.xml
     // Rx: Set RSSI offset to adjust reported RSSI by +5 dB (default: 0), trimmed for external bias and differential configuration
     (uint32_t)0x00FB88A3,
+#if (CCFG_FORCE_VDDR_HH)
     // TX power override
     // Tx: Set PA trim to max (in ADI0, set PACTL0=0xF8)
     ADI_REG_OVERRIDE(0,12,0xF8),
-    (uint32_t)0xFFFFFFFF
+#endif
+    (uint32_t)0xFFFFFFFF,
 };
 
 
@@ -251,7 +253,7 @@ rfc_CMD_PROP_RX_t RF_cmdPropRx =
 // Carrier Sense Command
 rfc_CMD_PROP_CS_t RF_cmdPropCs =
 {
- .commandNo                = CMD_PROP_CS,
+    .commandNo                = CMD_PROP_CS,
     .status                   = 0x0000,
     .pNextOp                  = 0, // Set this to (uint8_t*)&RF_cmdCountBranch in the application
     .startTime                = 0x00000000,

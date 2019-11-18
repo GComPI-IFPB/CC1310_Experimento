@@ -31,6 +31,9 @@
  */
 
 /***** Includes *****/
+/* Packet Header */
+#include "packet.h"
+
 /* XDCtools Header files */
 #include <xdc/std.h>
 #include <xdc/cfg/global.h>
@@ -64,7 +67,7 @@
 
 /* Packet RX Configuration */
 #define DATA_ENTRY_HEADER_SIZE 8  /* Constant header size of a Generic Data Entry */
-#define MAX_LENGTH             30 /* Max length byte the radio will accept */
+#define MAX_LENGTH             sizeof(tPacket) /* Max length byte the radio will accept */
 #define NUM_DATA_ENTRIES       2  /* NOTE: Only two data entries supported at the moment */
 #define NUM_APPENDED_BYTES     2  /* The Data Entries data field will contain:
                                    * 1 Header byte (RF_cmdPropRx.rxConf.bIncludeHdr = 0x1)
@@ -72,7 +75,7 @@
                                    * 1 status byte (RF_cmdPropRx.rxConf.bAppendStatus = 0x1) */
 
 
-
+/* ALL VARIABLES AND OBJECTS*/
 /***** Prototypes *****/
 static void rxTaskFunction(UArg arg0, UArg arg1);
 static void callback(RF_Handle h, RF_CmdHandle ch, RF_EventMask e);
@@ -88,6 +91,24 @@ static RF_Handle rfHandle;
 /* Pin driver handle */
 static PIN_Handle ledPinHandle;
 static PIN_State ledPinState;
+
+/* Receive dataQueue for RF Core to fill in data */
+static dataQueue_t dataQueue;
+static rfc_dataEntryGeneral_t* currentDataEntry;
+static uint8_t packetLength;
+static uint8_t* packetDataPointer;
+
+static PIN_Handle pinHandle;
+
+static uint8_t packet[sizeof(tPacket)]; /* The length byte is stored in a separate variable */
+static tPacket rxPacket;
+
+/*  RSSI UTILS  */
+static rfc_propRxOutput_t rxStatistics;
+
+/* semaphore object definitions */
+Semaphore_Struct semStruct;
+Semaphore_Handle semHandle;
 
 /* Buffer which contains all Data Entries for receiving data.
  * Pragmas are needed to make sure this buffer is 4 byte aligned (requirement from the RF Core) */
@@ -108,21 +129,6 @@ static PIN_State ledPinState;
     #error This compiler is not supported.
 #endif
 
-/* Receive dataQueue for RF Core to fill in data */
-static dataQueue_t dataQueue;
-static rfc_dataEntryGeneral_t* currentDataEntry;
-static uint8_t packetLength;
-static uint8_t* packetDataPointer;
-
-static PIN_Handle pinHandle;
-
-static uint8_t packet[MAX_LENGTH + NUM_APPENDED_BYTES - 1]; /* The length byte is stored in a separate variable */
-//static int8_t RSSI;
-
-/*  RSSI UTILS  */
-static rfc_propRxOutput_t rxStatistics;
-int8_t RSSIout;
-
 /*
  * Application LED pin configuration table:
  *   - All LEDs board LEDs are off.
@@ -136,10 +142,6 @@ PIN_Config pinTable[] =
 #endif
     PIN_TERMINATE
 };
-
-/* semaphore object definitions */
-Semaphore_Struct semStruct;
-Semaphore_Handle semHandle;
 
 /***** Function definitions *****/
 void RxTask_init(PIN_Handle ledPinHandle) {
@@ -222,20 +224,10 @@ static void rxTaskFunction(UArg arg0, UArg arg1)
     while(1)
     {
         /* Waiting for packet */
-        Semaphore_pend(semHandle, BIOS_WAIT_FOREVER);
+        Semaphore_pend(semHandle, BIOS_WAIT_FOREVER); // DORME THREAD
         /* Writing packet to UART */
-//        int i;
-//        size_t n = (sizeof(packet)/sizeof(packet[0]));
-//        int buffer[n];
-//        for (i = 0; i < n; i++) {
-//             buffer[i] = (int) packet[i];
-////            UART_write(uart, &buffer, sizeof(buffer));
-//        }
         UART_write(uart, &packet, sizeof(packet));
-        UART_write(uart, &RSSIout, sizeof(RSSIout));
-//        UART_write(uart, &packet, sizeof(packet));
-//        uint8_t test[] = 123;
-//        UART_write(uart, &test, sizeof(test));
+//        UART_write(uart, &RSSIout, sizeof(RSSIout));
     };
 }
 
@@ -244,13 +236,11 @@ void callback(RF_Handle h, RF_CmdHandle ch, RF_EventMask e)
     if (e & RF_EventRxEntryDone)
     {
         /* Toggle pin to indicate RX */
-//        RSSI = RF_getRssi(h);
-        PIN_setOutputValue(pinHandle, Board_PIN_LED2,!PIN_getOutputValue(Board_PIN_LED2));
+        PIN_setOutputValue(pinHandle, Board_PIN_LED1,!PIN_getOutputValue(Board_PIN_LED1));
 
         /* Get current unhandled data entry */
         currentDataEntry = RFQueue_getDataEntry();
 
-        RSSIout = rxStatistics.lastRssi;
         /* Handle the packet data, located at &currentDataEntry->data:
          * - Length is the first byte with the current configuration
          * - Data starts from the second byte */
@@ -258,12 +248,18 @@ void callback(RF_Handle h, RF_CmdHandle ch, RF_EventMask e)
         packetDataPointer = (uint8_t*)(&currentDataEntry->data + 1);
 
         /* Copy the payload + the status byte to the packet variable */
-        memcpy(packet, packetDataPointer, (packetLength + 1));
+        memcpy(&rxPacket, packetDataPointer, (packetLength + 1));
+
+        rxPacket.jumps[rxPacket.jump_count].to = 255;
+        rxPacket.jumps[rxPacket.jump_count].rssi = rxStatistics.lastRssi;
+        rxPacket.jump_count++;
+
+        memcpy(&packet, &rxPacket, sizeof(tPacket));
 
         RFQueue_nextEntry();
 
         /* Packet received */
-        Semaphore_post(semHandle);
+        Semaphore_post(semHandle); // ACORDA THREAD;
 
     }
 }

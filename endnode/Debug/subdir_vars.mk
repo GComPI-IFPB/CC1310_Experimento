@@ -11,43 +11,61 @@ CMD_SRCS += \
 C_SRCS += \
 ../CC1310_LAUNCHXL.c \
 ../CC1310_LAUNCHXL_fxns.c \
+../RFQueue.c \
 ../ccfg.c \
 ../main_tirtos.c \
+../packet.c \
+../queue.c \
 ../rfListenBeforeTalk.c 
 
 C_DEPS += \
 ./CC1310_LAUNCHXL.d \
 ./CC1310_LAUNCHXL_fxns.d \
+./RFQueue.d \
 ./ccfg.d \
 ./main_tirtos.d \
+./packet.d \
+./queue.d \
 ./rfListenBeforeTalk.d 
 
 OBJS += \
 ./CC1310_LAUNCHXL.obj \
 ./CC1310_LAUNCHXL_fxns.obj \
+./RFQueue.obj \
 ./ccfg.obj \
 ./main_tirtos.obj \
+./packet.obj \
+./queue.obj \
 ./rfListenBeforeTalk.obj 
 
 OBJS__QUOTED += \
 "CC1310_LAUNCHXL.obj" \
 "CC1310_LAUNCHXL_fxns.obj" \
+"RFQueue.obj" \
 "ccfg.obj" \
 "main_tirtos.obj" \
+"packet.obj" \
+"queue.obj" \
 "rfListenBeforeTalk.obj" 
 
 C_DEPS__QUOTED += \
 "CC1310_LAUNCHXL.d" \
 "CC1310_LAUNCHXL_fxns.d" \
+"RFQueue.d" \
 "ccfg.d" \
 "main_tirtos.d" \
+"packet.d" \
+"queue.d" \
 "rfListenBeforeTalk.d" 
 
 C_SRCS__QUOTED += \
 "../CC1310_LAUNCHXL.c" \
 "../CC1310_LAUNCHXL_fxns.c" \
+"../RFQueue.c" \
 "../ccfg.c" \
 "../main_tirtos.c" \
+"../packet.c" \
+"../queue.c" \
 "../rfListenBeforeTalk.c" 
 
 

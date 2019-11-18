@@ -4,11 +4,9 @@
 
 SHELL = cmd.exe
 
-CG_TOOL_ROOT := C:/ti/ccs901/ccs/tools/compiler/ti-cgt-arm_18.12.3.LTS
+CG_TOOL_ROOT := C:/ti/ccs920/ccs/tools/compiler/ti-cgt-arm_18.12.3.LTS
 
-GEN_OPTS += C:/Users/Left/workspace_v9/tirtos_builds_CC1310_LAUNCHXL_release_ccs/Debug/configPkg/compiler.opt
 GEN_OPTS__FLAG := --cmd_file="C:/Users/Left/workspace_v9/tirtos_builds_CC1310_LAUNCHXL_release_ccs/Debug/configPkg/compiler.opt"
-GEN_CMDS += C:/Users/Left/workspace_v9/tirtos_builds_CC1310_LAUNCHXL_release_ccs/Debug/configPkg/linker.cmd
 GEN_CMDS__FLAG := -l"C:/Users/Left/workspace_v9/tirtos_builds_CC1310_LAUNCHXL_release_ccs/Debug/configPkg/linker.cmd"
 
 ORDERED_OBJS += \
@@ -16,6 +14,7 @@ ORDERED_OBJS += \
 "./CC1310_LAUNCHXL_fxns.obj" \
 "./RFQueue.obj" \
 "./ccfg.obj" \
+"./packet.obj" \
 "./rfPacketRx.obj" \
 "./smartrf_settings/smartrf_settings.obj" \
 "../CC1310_LAUNCHXL_TIRTOS.cmd" \
@@ -136,45 +135,45 @@ endif
 
 # Add inputs and outputs from these tool invocations to the build variables 
 EXE_OUTPUTS += \
-rfPacketRx_CC1310_LAUNCHXL_tirtos_ccs.out \
+rfPacketRx_UART_CC1310_LAUNCHXL_tirtos_ccs.out \
 
 EXE_OUTPUTS__QUOTED += \
-"rfPacketRx_CC1310_LAUNCHXL_tirtos_ccs.out" \
+"rfPacketRx_UART_CC1310_LAUNCHXL_tirtos_ccs.out" \
 
 BIN_OUTPUTS += \
-rfPacketRx_CC1310_LAUNCHXL_tirtos_ccs.hex \
+rfPacketRx_UART_CC1310_LAUNCHXL_tirtos_ccs.hex \
 
 BIN_OUTPUTS__QUOTED += \
-"rfPacketRx_CC1310_LAUNCHXL_tirtos_ccs.hex" \
+"rfPacketRx_UART_CC1310_LAUNCHXL_tirtos_ccs.hex" \
 
 
 # All Target
 all: $(OBJS) $(CMD_SRCS) $(GEN_CMDS)
-	@$(MAKE) --no-print-directory -Onone "rfPacketRx_CC1310_LAUNCHXL_tirtos_ccs.out"
+	@$(MAKE) --no-print-directory -Onone "rfPacketRx_UART_CC1310_LAUNCHXL_tirtos_ccs.out"
 
 dependents:
 	-cd C:/Users/Left/workspace_v9/tirtos_builds_CC1310_LAUNCHXL_release_ccs/Debug && $(MAKE) all
 
 # Tool invocations
-rfPacketRx_CC1310_LAUNCHXL_tirtos_ccs.out: $(OBJS) $(CMD_SRCS) $(GEN_CMDS) C:/Users/Left/workspace_v9/tirtos_builds_CC1310_LAUNCHXL_release_ccs/Debug/tirtos_builds_CC1310_LAUNCHXL_release_ccs.lib
+rfPacketRx_UART_CC1310_LAUNCHXL_tirtos_ccs.out: $(OBJS) $(CMD_SRCS) $(GEN_CMDS) C:/Users/Left/workspace_v9/tirtos_builds_CC1310_LAUNCHXL_release_ccs/Debug/tirtos_builds_CC1310_LAUNCHXL_release_ccs.lib
 	@echo 'Building target: "$@"'
 	@echo 'Invoking: ARM Linker'
-	"C:/ti/ccs901/ccs/tools/compiler/ti-cgt-arm_18.12.3.LTS/bin/armcl" -mv7M3 --code_state=16 --float_support=vfplib -me --define=DeviceFamily_CC13X0 --define=CCFG_FORCE_VDDR_HH=0 --define=SUPPORT_PHY_CUSTOM --define=SUPPORT_PHY_50KBPS2GFSK --define=SUPPORT_PHY_625BPSLRM --define=SUPPORT_PHY_5KBPSSLLR -g --diag_warning=225 --diag_warning=255 --diag_wrap=off --display_error_number --gen_func_subsections=on -z -m"rfPacketRx_CC1310_LAUNCHXL_tirtos_ccs.map" -i"C:/ti/simplelink_cc13x0_sdk_3_20_00_23/source" -i"C:/ti/simplelink_cc13x0_sdk_3_20_00_23/kernel/tirtos/packages" -i"C:/ti/ccs901/ccs/tools/compiler/ti-cgt-arm_18.12.3.LTS/lib" --diag_wrap=off --display_error_number --warn_sections --xml_link_info="rfPacketRx_CC1310_LAUNCHXL_tirtos_ccs_linkInfo.xml" --rom_model -o "rfPacketRx_CC1310_LAUNCHXL_tirtos_ccs.out" $(ORDERED_OBJS)
+	"C:/ti/ccs920/ccs/tools/compiler/ti-cgt-arm_18.12.3.LTS/bin/armcl" -mv7M3 --code_state=16 --float_support=vfplib -me --define=DeviceFamily_CC13X0 --define=CCFG_FORCE_VDDR_HH=0 --define=SUPPORT_PHY_CUSTOM --define=SUPPORT_PHY_50KBPS2GFSK --define=SUPPORT_PHY_625BPSLRM --define=SUPPORT_PHY_5KBPSSLLR -g --diag_warning=225 --diag_warning=255 --diag_wrap=off --display_error_number --gen_func_subsections=on -z -m"rfPacketRx_UART_CC1310_LAUNCHXL_tirtos_ccs.map" -i"C:/ti/simplelink_cc13x0_sdk_3_20_00_23/source" -i"C:/ti/simplelink_cc13x0_sdk_3_20_00_23/kernel/tirtos/packages" -i"C:/ti/ccs920/ccs/tools/compiler/ti-cgt-arm_18.12.3.LTS/lib" --diag_wrap=off --display_error_number --warn_sections --xml_link_info="rfPacketRx_UART_CC1310_LAUNCHXL_tirtos_ccs_linkInfo.xml" --rom_model -o "rfPacketRx_UART_CC1310_LAUNCHXL_tirtos_ccs.out" $(ORDERED_OBJS)
 	@echo 'Finished building target: "$@"'
 	@echo ' '
 
-rfPacketRx_CC1310_LAUNCHXL_tirtos_ccs.hex: $(EXE_OUTPUTS)
+rfPacketRx_UART_CC1310_LAUNCHXL_tirtos_ccs.hex: $(EXE_OUTPUTS)
 	@echo 'Building files: $(strip $(EXE_OUTPUTS__QUOTED))'
 	@echo 'Invoking: ARM Hex Utility'
-	"C:/ti/ccs901/ccs/tools/compiler/ti-cgt-arm_18.12.3.LTS/bin/armhex"  -o "rfPacketRx_CC1310_LAUNCHXL_tirtos_ccs.hex" $(EXE_OUTPUTS__QUOTED)
+	"C:/ti/ccs920/ccs/tools/compiler/ti-cgt-arm_18.12.3.LTS/bin/armhex"  -o "rfPacketRx_UART_CC1310_LAUNCHXL_tirtos_ccs.hex" $(EXE_OUTPUTS__QUOTED)
 	@echo 'Finished building: $(strip $(EXE_OUTPUTS__QUOTED))'
 	@echo ' '
 
 # Other Targets
 clean:
 	-$(RM) $(BIN_OUTPUTS__QUOTED)$(EXE_OUTPUTS__QUOTED)
-	-$(RM) "CC1310_LAUNCHXL.obj" "CC1310_LAUNCHXL_fxns.obj" "RFQueue.obj" "ccfg.obj" "rfPacketRx.obj" "smartrf_settings\smartrf_settings.obj" 
-	-$(RM) "CC1310_LAUNCHXL.d" "CC1310_LAUNCHXL_fxns.d" "RFQueue.d" "ccfg.d" "rfPacketRx.d" "smartrf_settings\smartrf_settings.d" 
+	-$(RM) "CC1310_LAUNCHXL.obj" "CC1310_LAUNCHXL_fxns.obj" "RFQueue.obj" "ccfg.obj" "packet.obj" "rfPacketRx.obj" "smartrf_settings\smartrf_settings.obj" 
+	-$(RM) "CC1310_LAUNCHXL.d" "CC1310_LAUNCHXL_fxns.d" "RFQueue.d" "ccfg.d" "packet.d" "rfPacketRx.d" "smartrf_settings\smartrf_settings.d" 
 	-@echo 'Finished clean'
 	-@echo ' '
 

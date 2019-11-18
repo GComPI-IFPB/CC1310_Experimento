@@ -13,6 +13,7 @@ C_SRCS += \
 ../CC1310_LAUNCHXL_fxns.c \
 ../RFQueue.c \
 ../ccfg.c \
+../packet.c \
 ../rfPacketRx.c 
 
 C_DEPS += \
@@ -20,6 +21,7 @@ C_DEPS += \
 ./CC1310_LAUNCHXL_fxns.d \
 ./RFQueue.d \
 ./ccfg.d \
+./packet.d \
 ./rfPacketRx.d 
 
 OBJS += \
@@ -27,6 +29,7 @@ OBJS += \
 ./CC1310_LAUNCHXL_fxns.obj \
 ./RFQueue.obj \
 ./ccfg.obj \
+./packet.obj \
 ./rfPacketRx.obj 
 
 OBJS__QUOTED += \
@@ -34,6 +37,7 @@ OBJS__QUOTED += \
 "CC1310_LAUNCHXL_fxns.obj" \
 "RFQueue.obj" \
 "ccfg.obj" \
+"packet.obj" \
 "rfPacketRx.obj" 
 
 C_DEPS__QUOTED += \
@@ -41,6 +45,7 @@ C_DEPS__QUOTED += \
 "CC1310_LAUNCHXL_fxns.d" \
 "RFQueue.d" \
 "ccfg.d" \
+"packet.d" \
 "rfPacketRx.d" 
 
 C_SRCS__QUOTED += \
@@ -48,6 +53,7 @@ C_SRCS__QUOTED += \
 "../CC1310_LAUNCHXL_fxns.c" \
 "../RFQueue.c" \
 "../ccfg.c" \
+"../packet.c" \
 "../rfPacketRx.c" 
 
 
