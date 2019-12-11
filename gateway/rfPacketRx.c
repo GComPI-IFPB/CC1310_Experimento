@@ -67,7 +67,7 @@
 
 /* Packet RX Configuration */
 #define DATA_ENTRY_HEADER_SIZE 8  /* Constant header size of a Generic Data Entry */
-#define MAX_LENGTH             sizeof(tPacket) /* Max length byte the radio will accept */
+#define MAX_LENGTH             124 /* Max length byte the radio will accept */
 #define NUM_DATA_ENTRIES       2  /* NOTE: Only two data entries supported at the moment */
 #define NUM_APPENDED_BYTES     2  /* The Data Entries data field will contain:
                                    * 1 Header byte (RF_cmdPropRx.rxConf.bIncludeHdr = 0x1)
@@ -100,8 +100,9 @@ static uint8_t* packetDataPointer;
 
 static PIN_Handle pinHandle;
 
-static uint8_t packet[sizeof(tPacket)]; /* The length byte is stored in a separate variable */
-static tPacket rxPacket;
+static uint8_t packet[MAX_LENGTH]; /* The length byte is stored in a separate variable */
+static uint8_t tmpPacketBuffer[MAX_LENGTH]; /* The length byte is stored in a separate variable */
+static tPacket packetRX;
 
 /*  RSSI UTILS  */
 static rfc_propRxOutput_t rxStatistics;
@@ -228,6 +229,7 @@ static void rxTaskFunction(UArg arg0, UArg arg1)
         /* Writing packet to UART */
         UART_write(uart, &packet, sizeof(packet));
 //        UART_write(uart, &RSSIout, sizeof(RSSIout));
+        memset(packet, 0, sizeof(packet));
     };
 }
 
@@ -248,13 +250,16 @@ void callback(RF_Handle h, RF_CmdHandle ch, RF_EventMask e)
         packetDataPointer = (uint8_t*)(&currentDataEntry->data + 1);
 
         /* Copy the payload + the status byte to the packet variable */
-        memcpy(&rxPacket, packetDataPointer, (packetLength + 1));
+        memcpy(tmpPacketBuffer, packetDataPointer, (packetLength + 1));
+        memcpy(&packetRX, tmpPacketBuffer + 1 + ((tmpPacketBuffer[0] - 1) * sizeof(tPacket)), sizeof(tPacket));
 
-        rxPacket.jumps[rxPacket.jump_count].to = 255;
-        rxPacket.jumps[rxPacket.jump_count].rssi = rxStatistics.lastRssi;
-        rxPacket.jump_count++;
+        packetRX.dstID = 255;
+        packetRX.rssi = rxStatistics.lastRssi;
 
-        memcpy(&packet, &rxPacket, sizeof(tPacket));
+        memcpy(tmpPacketBuffer + 1 + ((tmpPacketBuffer[0] - 1) * sizeof(tPacket)), &packetRX, sizeof(tPacket));
+        memcpy(packet, tmpPacketBuffer, sizeof(tmpPacketBuffer));
+
+//        memcpy(&packet, &rxPacket, sizeof(tPacket));
 
         RFQueue_nextEntry();
 

@@ -34,14 +34,11 @@
 #include "includes.h"
 
 /***** Defines *****/
-
 #define TASK_STACK_SIZE 1024
 
 #define CREATE_TASK_PRIORITY 2
 
-#define OWN_TX_TASK_PRIORITY 2
-
-#define RECEIVED_TX_TASK_PRIORITY 2
+#define TX_TASK_PRIORITY 2
 
 #define RX_TASK_PRIORITY 2
 
@@ -67,7 +64,7 @@
 
 /* Packet RX Configuration */
 #define DATA_ENTRY_HEADER_SIZE 8  /* Constant header size of a Generic Data Entry */
-#define MAX_LENGTH             sizeof(tPacket) /* Max length byte the radio will accept */
+#define MAX_LENGTH             124 /* Max length byte the radio will accept */
 #define NUM_DATA_ENTRIES       2  /* NOTE: Only two data entries supported at the moment */
 #define NUM_APPENDED_BYTES     2  /* The Data Entries data field will contain:
                                    * 1 Header byte (RF_cmdPropRx.rxConf.bIncludeHdr = 0x1)
@@ -99,19 +96,25 @@
 
 /***** Prototypes *****/
 void RF_init();
-void txOwnTask_init();
-void txRxTask_init();
+void txTask_init();
 void rxTask_init();
 void createPacketTask_init();
 
+
+void printArray(uint8_t *arr);
+void printPacket(tPacket *p);
+void copyByteArray(uint8_t *to, uint8_t *from);
+void insertPacket(uint8_t *arr, tPacket *p);
+void getPacket(uint8_t *arr, tPacket *p);
+void copyPacketToArray(uint8_t *arr, tPacket *p);
+void newestInsert(uint8_t *arr, tPacket *p);
 
 static void rxcallback(RF_Handle h, RF_CmdHandle ch, RF_EventMask e);
 static void txcallback(RF_Handle h, RF_CmdHandle ch, RF_EventMask e);
 
 
 static void createPacketFunction(UArg arg0, UArg arg1);
-static void txOwnTaskFunction(UArg arg0, UArg arg1);
-static void txRxTaskFunction(UArg arg0, UArg arg1);
+static void txTaskFunction(UArg arg0, UArg arg1);
 static void rxTaskFunction(UArg arg0, UArg arg1);
 
 
@@ -122,9 +125,6 @@ static RF_Params rfParams;
 
 /* semaphore object definitions */
 
-//// Init mutex
-//static Semaphore_Struct semInitStruct;
-//static Semaphore_Handle semInitHandle;
 // Mutex
 static Semaphore_Struct semHandleStruct;
 static Semaphore_Handle semHandle;
@@ -133,10 +133,10 @@ static Semaphore_Struct semOwnEmptyStruct, semOwnFullStruct;
 static Semaphore_Handle semOwnEmptyHandle, semOwnFullHandle;
 // RX Queue access
 static Semaphore_Struct semTxRxEmptyStruct, semTxRxFullStruct;
-static Semaphore_Handle semTxRxEmptyHandle, semTxRxFullHandle;
+//static Semaphore_Handle semTxRxEmptyHandle, semTxRxFullHandle;
 // Valid Packet
 static Semaphore_Struct semValidFalseStruct, semValidTrueStruct;
-static Semaphore_Handle semValidFalseHandle, semValidTrueHandle;
+//static Semaphore_Handle semValidFalseHandle, semValidTrueHandle;
 
 /* Pin driver handle */
 static PIN_Handle ledPinHandle;
@@ -149,23 +149,17 @@ static uint8_t packetLength;
 static uint8_t* packetDataPointer;
 
 /* Task objects and variables */
-static Task_Params txOwnTaskParams, rxTaskParams;
-static Task_Params txRxTaskParams, createPacketParams;
-Task_Struct txOwnTask, rxTask;
-Task_Struct txRxTask, createPacketTask;    /* not static so you can see in ROV */
-static uint8_t txOwnTaskStack[TASK_STACK_SIZE], rxTaskStack[TASK_STACK_SIZE];
-static uint8_t txRxTaskStack[TASK_STACK_SIZE], createPacketStack[TASK_STACK_SIZE];
+static Task_Params txTaskParams, rxTaskParams, createPacketParams;
+Task_Struct txTask, rxTask, createPacketTask;    /* not static so you can see in ROV */
+static uint8_t txTaskStack[TASK_STACK_SIZE], rxTaskStack[TASK_STACK_SIZE], createPacketStack[TASK_STACK_SIZE];
 
 /* Packets and buffer */
 static tPacket packetTX, packetRX;
-static tPacket sharedOwnPacket, sharedRxPacket;
 static uint8_t packetBuffer[MAX_LENGTH];
+static uint8_t tmpPacketBuffer[MAX_LENGTH];
 
 static uint16_t seqNumber;
-static uint16_t IDGen;
 static uint8_t sensorID;
-//static uint32_t _time;
-//static tQueue receivedPacketQueue, ownPacketQueue;
 
 /* RSSI util */
 static rfc_propRxOutput_t rxStatistics;
@@ -182,16 +176,23 @@ PIN_Config ledPinTable[] =
     PIN_TERMINATE
 };
 
-//short int ownFlag;
-//short int rxFlag;
+uint8_t newestIndex;
+uint8_t initTask;
 
 /*
  *  ======== main ========
  */
 int main(void) {
 
-//    ownFlag = 0;
-//    rxFlag = 0;
+//    TIME = 60;
+
+//    txTaskFlag = 0;
+    memset(tmpPacketBuffer, 0, sizeof(tmpPacketBuffer));
+    memset(packetBuffer, 0, sizeof(packetBuffer));
+
+    newestIndex = 0;
+
+    initTask = 1;
 
     sensorID = 3;
 
@@ -219,37 +220,10 @@ int main(void) {
     Semaphore_construct(&semOwnFullStruct, 0, &semOwnFullParams);
     semOwnFullHandle = Semaphore_handle(&semOwnFullStruct);
 
-    /*************************************************************/
-
-    /* Received Queue && receivedTX */
-    Semaphore_Params semTxRxEmptyParams;
-    Semaphore_Params_init(&semTxRxEmptyParams);
-    Semaphore_construct(&semTxRxEmptyStruct, 1, &semTxRxEmptyParams);
-    semTxRxEmptyHandle = Semaphore_handle(&semTxRxEmptyStruct);
-
-    Semaphore_Params semTxRxFullParams;
-    Semaphore_Params_init(&semTxRxFullParams);
-    Semaphore_construct(&semTxRxFullStruct, 0, &semTxRxFullParams);
-    semTxRxFullHandle = Semaphore_handle(&semTxRxFullStruct);
-    /*************************************************************/
-
-    /* Packet on buffer */
-    Semaphore_Params semValidFalseParams;
-    Semaphore_Params_init(&semValidFalseParams);
-    Semaphore_construct(&semValidFalseStruct, 1, &semValidFalseParams);
-    semValidFalseHandle = Semaphore_handle(&semValidFalseStruct);
-
-    Semaphore_Params semValidTrueParams;
-    Semaphore_Params_init(&semValidTrueParams);
-    Semaphore_construct(&semValidTrueStruct, 0, &semValidTrueParams);
-    semValidTrueHandle = Semaphore_handle(&semValidTrueStruct);
-    /*************************************************************/
-
     RF_init();
 
     createPacketTask_init();
-    txOwnTask_init();
-//    txRxTask_init();
+    txTask_init();
 //    rxTask_init();
 
     BIOS_start();
@@ -279,7 +253,7 @@ void RF_init() {
     }
 
     /* Customize the CMD_PROP_TX command for this application */
-    RF_cmdPropTx.pktLen = PAYLOAD_LENGTH;
+    RF_cmdPropTx.pktLen = MAX_LENGTH;
     RF_cmdPropTx.pPkt = packetBuffer;
 //    RF_cmdPropTx.startTime = 0;
     RF_cmdPropTx.startTrigger.triggerType = TRIG_NOW;
@@ -341,26 +315,16 @@ void createPacketTask_init() {
     Task_construct(&createPacketTask, createPacketFunction, &createPacketParams, NULL);
 }
 
-void txOwnTask_init() {
+void txTask_init() {
 
-    Task_Params_init(&txOwnTaskParams);
-    txOwnTaskParams.stackSize = TASK_STACK_SIZE;
-    txOwnTaskParams.priority = OWN_TX_TASK_PRIORITY;
-    txOwnTaskParams.stack = &txOwnTaskStack;
-    txOwnTaskParams.arg0 = (UInt)1000000;
+    Task_Params_init(&txTaskParams);
+    txTaskParams.stackSize = TASK_STACK_SIZE;
+    txTaskParams.priority = TX_TASK_PRIORITY;
+    txTaskParams.stack = &txTaskStack;
+    txTaskParams.arg0 = (UInt)1000000;
 
-    Task_construct(&txOwnTask, txOwnTaskFunction, &txOwnTaskParams, NULL);
-}
+    Task_construct(&txTask, txTaskFunction, &txTaskParams, NULL);
 
-void txRxTask_init() {
-
-    Task_Params_init(&txRxTaskParams);
-    txRxTaskParams.stackSize = TASK_STACK_SIZE;
-    txRxTaskParams.priority = RECEIVED_TX_TASK_PRIORITY;
-    txRxTaskParams.stack = &txRxTaskStack;
-    txRxTaskParams.arg0 = (UInt)1000000;
-
-    Task_construct(&txRxTask, txRxTaskFunction, &txRxTaskParams, NULL);
 }
 
 void rxTask_init() {
@@ -376,126 +340,136 @@ void rxTask_init() {
 
 
 void createPacketFunction(UArg arg0, UArg arg1) {
-    IDGen = 0;
-//    printf("TASK: Create Packet\n");
 
     AONBatMonEnable();
     while (1) {
-//        printf("TASK: Create Packet LOOP\n");
         /* Run forever */
+        Semaphore_pend(semOwnEmptyHandle, BIOS_WAIT_FOREVER);
+
+        Semaphore_pend(semHandle, BIOS_WAIT_FOREVER);
+
 
         /* Create packet with incrementing sequence number & random payload */
-        packetTX.packetSrcID = sensorID;
-        packetTX.packetID[0] = (uint8_t) (IDGen >> 8);
-        packetTX.packetID[1] = (uint8_t) (IDGen++);
-        packetTX.temp = (uint8_t) AONBatMonTemperatureGetDegC();
+        packetTX.srcID = sensorID;
+        packetTX.seqNumber[0] = (uint8_t)(seqNumber >> 8);
+        packetTX.seqNumber[1] = (uint8_t)(seqNumber++);
+        packetTX.payload = (uint8_t) AONBatMonTemperatureGetDegC();
         AONBatMonDisable();
-//        packetTX.temp[0] = (uint8_t) (tmprt >> 32);
-//        packetTX.temp[1] = (uint8_t) (tmprt >> 24);
-//        packetTX.temp[2] = (uint8_t) (tmprt >> 16);
-//        packetTX.temp[3] = (uint8_t) (tmprt >> 8);
-//        packetTX.temp[4] = (uint8_t) (tmprt);
-        packetTX.data[0] = (uint8_t)(seqNumber >> 8);
-        packetTX.data[1] = (uint8_t)(seqNumber++);
-        packetTX.jumps[packetTX.jump_count].src = sensorID;
-
-
-        Semaphore_pend(semOwnEmptyHandle, BIOS_WAIT_FOREVER);
-//        printf("TASK: Create Packet PEND semOwnEmptyHandle\n");
-        Semaphore_pend(semHandle, BIOS_WAIT_FOREVER);
-//        printf("TASK: Create Packet PEND semHandle\n");
-
-        sharedOwnPacket = packetTX;
 
         Semaphore_post(semHandle);
-//        printf("TASK: Create Packet POST semHandle\n");
-        Semaphore_post(semOwnFullHandle);
-//        printf("TASK: Create Packet POST semOwnFullHandle\n");
 
+        Semaphore_post(semOwnFullHandle);
 
         AONBatMonEnable();
-        sleep(1);
-
     }
 }
 
-void txOwnTaskFunction(UArg arg0, UArg arg1) {
-    tPacket txOwnPacket;
-//    printf("TASK: TX OWN\n");
+void txTaskFunction(UArg arg0, UArg arg1) {
+//    sleep(5);
     while (1) {
-//            printf("TASK: TX OWN LOOP\n");
+//        tPacket random;
+//        initPacket(&random);
+//        random.srcID = 155;
+//        random.dstID = 155;
+//        random.payload = 155;
+//        random.seqNumber[0] = 155;
+//        random.seqNumber[1] = 155;
+//        random.txPower = 155;
 
         Semaphore_pend(semOwnFullHandle, BIOS_WAIT_FOREVER);
-//            printf("TASK: TX OWN PEND semOwnFullHandle\n");
         Semaphore_pend(semHandle, BIOS_WAIT_FOREVER);
-//            printf("TASK: TX OWN PEND semHandle\n");
 
-        txOwnPacket = sharedOwnPacket;
+        uint8_t i = 0;
+        uint16_t slp, momentum = 0;
+//        uint8_t qtd_tmp = 1;
+//        if (qtd_tmp < 0) qtd_tmp = 1;
+//        tmpPacketBuffer[0]++;
+        for (i = 0; i < 4; i++) {
+            switch (i) {
+            case 0:
+                packetTX.txPower = (uint8_t) 14;
+//                printArray(tmpPacketBuffer);
+                insertPacket(tmpPacketBuffer, &packetTX);
+//                copyPacketToArray(tmpPacketBuffer, &packetTX);
+//                printArray(tmpPacketBuffer);
+                copyByteArray(packetBuffer, tmpPacketBuffer);
+                tmpPacketBuffer[0]--;
+
+                RF_yield(rfHandle);
+
+                RF_cmdPropRadioDivSetup.txPower = 0xA73F;
+
+                RF_runCmd(rfHandle, (RF_Op*)&RF_cmdPropTx, RF_PriorityNormal,
+                            &txcallback, 0);
+                slp = rand()%500000;
+                momentum += slp;
+                usleep(slp);
+                break;
+            case 1:
+                packetTX.txPower = (uint8_t) 11;
+                insertPacket(tmpPacketBuffer, &packetTX);
+                copyByteArray(packetBuffer, tmpPacketBuffer);
+                tmpPacketBuffer[0]--;
+
+                RF_yield(rfHandle);
+
+                RF_cmdPropRadioDivSetup.txPower = 0x50DA;
+
+                RF_runCmd(rfHandle, (RF_Op*)&RF_cmdPropTx, RF_PriorityNormal,
+                            &txcallback, 0);
+                slp = rand()%500000;
+                momentum += slp;
+                usleep(slp);
+                break;
+            case 2:
+                packetTX.txPower = (uint8_t) 8;
+                insertPacket(tmpPacketBuffer, &packetTX);
+                copyByteArray(packetBuffer, tmpPacketBuffer);
+                tmpPacketBuffer[0]--;
+
+                RF_yield(rfHandle);
+
+                RF_cmdPropRadioDivSetup.txPower = 0x24CB;
+
+                RF_runCmd(rfHandle, (RF_Op*)&RF_cmdPropTx, RF_PriorityNormal,
+                            &txcallback, 0);
+                slp = rand()%500000;
+                momentum += slp;
+                usleep(slp);
+                break;
+            case 3:
+                packetTX.txPower = (uint8_t) 5;
+                insertPacket(tmpPacketBuffer, &packetTX);
+                copyByteArray(packetBuffer, tmpPacketBuffer);
+                tmpPacketBuffer[0]--;
+
+                RF_yield(rfHandle);
+
+                RF_cmdPropRadioDivSetup.txPower = 0x18C6;
+
+                RF_runCmd(rfHandle, (RF_Op*)&RF_cmdPropTx, RF_PriorityNormal,
+                            &txcallback, 0);
+                slp = rand()%500000;
+                momentum += slp;
+                usleep(slp);
+                break;
+            }
+        }
+
+        memset(tmpPacketBuffer, 0, sizeof(tmpPacketBuffer));
+        memset(packetBuffer, 0, sizeof(packetBuffer));
+        newestIndex = 0;
 
         Semaphore_post(semHandle);
-//            printf("TASK: TX OWN POST semHandle\n");
+
         Semaphore_post(semOwnEmptyHandle);
-//            printf("TASK: TX OWN POST semOwnEmptyHandle\n");
 
-        Semaphore_pend(semHandle, BIOS_WAIT_FOREVER);
 
-        memcpy(packetBuffer, &txOwnPacket, sizeof(tPacket));
-
-        RF_runCmd(rfHandle, (RF_Op*)&RF_cmdPropTx, RF_PriorityNormal,
-        &txcallback, 0);
-
-        Semaphore_post(semHandle);
-//        Task_yield();
-//        Task_sleep(1000000);
-//        sleep(1);
+        sleep(15 - (momentum/1e6));
+//        sleep(5);
     }
 }
 
-
-/*
- *  ======== txTaskFunction ========
- */
-
-void txRxTaskFunction(UArg arg0, UArg arg1) {
-    tPacket packetTxRx;
-//    printf("TASK: TX RX\n");
-    while (1) {
-//        printf("TASK: TX RX LOOP\n");
-
-        Semaphore_pend(semValidTrueHandle, BIOS_WAIT_FOREVER);
-//        printf("TASK: TX RX PEND semValidTrueHandle\n");
-        Semaphore_pend(semTxRxFullHandle, BIOS_WAIT_FOREVER);
-//        printf("TASK: TX RX PEND semTxRxFullHandle\n");
-//        Semaphore_pend(semHandle, BIOS_WAIT_FOREVER);
-//        printf("TASK: TX RX PEND semHandle\n");
-
-        packetTxRx = sharedRxPacket;
-
-//        Semaphore_post(semHandle);
-//        printf("TASK: TX RX POST semHandle\n");
-        Semaphore_post(semTxRxEmptyHandle);
-//        printf("TASK: TX RX POST semTxRxEmptyHandle\n");
-        Semaphore_post(semValidFalseHandle);
-//        printf("TASK: TX RX POST semValidFalseHandle\n");
-
-        Semaphore_pend(semHandle, BIOS_WAIT_FOREVER);
-
-        packetTxRx.jumps[packetTxRx.jump_count].src = sensorID;
-
-        memcpy(packetBuffer, &packetTxRx, sizeof(tPacket));
-
-        RF_runCmd(rfHandle, (RF_Op*)&RF_cmdPropTx, RF_PriorityNormal,
-        &txcallback, 0);
-
-        Semaphore_post(semHandle);
-
-
-
-//        Task_yield();
-//        Task_sleep(1000);
-//        sleep(1);
-    }
-}
 
 /*
  *  ======== TX callback ========
@@ -507,7 +481,6 @@ static void txcallback(RF_Handle h, RF_CmdHandle ch, RF_EventMask e) {
         (RF_cmdPropTx.status == PROP_DONE_OK)) {
         PIN_setOutputValue(ledPinHandle, Board_PIN_LED2,
                                        !PIN_getOutputValue(Board_PIN_LED2));
-//        printf("TASK: TX RX SEND\n");
     }
 
 }
@@ -515,26 +488,15 @@ static void txcallback(RF_Handle h, RF_CmdHandle ch, RF_EventMask e) {
 static void rxTaskFunction(UArg arg0, UArg arg1)
 {
     /* Enter RX mode and stay forever in RX */
-//    printf("TASK: RX\n");
+
     while (1) {
-//        printf("TASK: RX LOOP\n");
-
-
         Semaphore_pend(semHandle, BIOS_WAIT_FOREVER);
-//        printf("TASK: RX PEND semHandle\n");
-
 
         RF_EventMask terminationReason = RF_runCmd(rfHandle, (RF_Op*)&RF_cmdPropRx,
                                                   RF_PriorityNormal, &rxcallback,
                                                   RF_EventRxEntryDone);
 
         Semaphore_post(semHandle);
-//        printf("TASK: RX POST semHandle\n");
-
-//        printf("TASK: RX POST semTxRxFullHandle\n");
-
-//        Task_yield();
-        sleep(1);
     }
 }
 
@@ -544,10 +506,10 @@ static void rxTaskFunction(UArg arg0, UArg arg1)
 
 static void rxcallback(RF_Handle h, RF_CmdHandle ch, RF_EventMask e)
 {
-//    printf("RX CALLBACK\n");
     if (e & RF_EventRxEntryDone)
     {
-//        printf("RX CALLBACK TRUE\n");
+//        printf("Recebeu!\n");
+        uint8_t buffer[124];
         /* Toggle pin to indicate RX */
 
         /* Get current unhandled data entry */
@@ -556,37 +518,132 @@ static void rxcallback(RF_Handle h, RF_CmdHandle ch, RF_EventMask e)
         /* Handle the packet data, located at &currentDataEntry->data:
          * - Length is the first byte with the current configuration
          * - Data starts from the second byte */
+//        printf("RX - ");
+//        printArray(&currentDataEntry->data + 1);
+//        printf("TMP - ");
+//        printArray(tmpPacketBuffer);
         packetLength      = *(uint8_t*)(&currentDataEntry->data);
         packetDataPointer =  (uint8_t*)(&currentDataEntry->data + 1);
 
         /* Copy the payload + the status byte to the packet variable */
-        memcpy(&packetRX, packetDataPointer, (packetLength + 1));
-//        printf("RX CALLBACK: Copy packet\n");
+        memcpy(buffer, packetDataPointer, (packetLength + 1));
+//        printf("B - ");
+//        printArray(buffer);
 
-        if (packetRX.packetSrcID > sensorID) {
+        getPacket(buffer, &packetRX);
+//        printf("%d\n", packetRX.srcID);
 
-//            printf("RX CALLBACK: Valid packet\n");
-            packetRX.jumps[packetRX.jump_count].to = sensorID;
-            packetRX.jumps[packetRX.jump_count].rssi = rxStatistics.lastRssi;
-            packetRX.jump_count++;
+        if (packetRX.srcID > sensorID) {
 
-            Semaphore_pend(semTxRxEmptyHandle, BIOS_WAIT_FOREVER);
-//            printf("RX CALLBACK PEND semTxRxEmptyHandle\n");
-            Semaphore_pend(semValidFalseHandle, BIOS_WAIT_FOREVER);
-//            printf("RX CALLBACK PEND semValidFalseHandle\n");
+            if (packetRX.srcID == (sensorID + 1) && initTask) {
+                initTask = 0;
+                txTask_init();
+            }
 
-            sharedRxPacket = packetRX;
+            packetRX.dstID = (uint8_t) sensorID;
+            packetRX.rssi = (uint8_t) rxStatistics.lastRssi;
+//            printf("Valido\n");
+            int i;
+            int j;
+            int k;
 
-            Semaphore_post(semValidTrueHandle);
-//            printf("RX CALLBACK POST semValidTrueHandle\n");
-            Semaphore_post(semTxRxFullHandle);
-//            printf("RX CALLBACK POST semTxRxFullHandle\n");
-
+            if (buffer[0] > 0 && tmpPacketBuffer[0] > 0) {
+                if ((buffer[0] + tmpPacketBuffer[0]) >= 17) {
+                    newestInsert(tmpPacketBuffer, &packetRX);
+                    tmpPacketBuffer[0]--;
+                }
+                else {
+                    i = buffer[0] * sizeof(tPacket);
+                    j = tmpPacketBuffer[0] * sizeof(tPacket);
+                    for (k = 1; k <= i; k++){
+                        tmpPacketBuffer[j+k] = buffer[k];
+                    }
+                    tmpPacketBuffer[0] += buffer[0];
+                    copyPacketToArray(tmpPacketBuffer, &packetRX);
+                }
+            }
+            else if (tmpPacketBuffer[0] > 0) {
+                i = buffer[0] * sizeof(tPacket);
+                j = tmpPacketBuffer[0] * sizeof(tPacket);
+                for (k = 1; k < i; k++){
+                    tmpPacketBuffer[j+k] = buffer[k];
+                }
+                copyPacketToArray(tmpPacketBuffer, &packetRX);
+            }
+            else {
+                i = buffer[0] * sizeof(tPacket);
+                j = tmpPacketBuffer[0] * sizeof(tPacket);
+                for (k = 0; k < i; k++){
+                    tmpPacketBuffer[j+k] = buffer[k];
+                }
+                copyPacketToArray(tmpPacketBuffer, &packetRX);
+            }
             PIN_setOutputValue(ledPinHandle, Board_PIN_LED1, !PIN_getOutputValue(Board_PIN_LED1));
-
         }
-
         RFQueue_nextEntry();
     }
 }
 
+void insertPacket(uint8_t *arr, tPacket *p) {
+    int index = arr[0] * sizeof(tPacket);
+    if (index < 0) index = 0;
+    arr[index+1] = p->srcID; // source of packet - sensor ID
+    arr[index+2] = p->seqNumber[0];
+    arr[index+3] = p->seqNumber[1];
+    arr[index+4] = p->payload;
+    arr[index+5] = p->txPower;
+    arr[index+6] = p->dstID;
+    arr[index+7] = p->rssi;
+    arr[0]++;
+}
+
+void copyPacketToArray(uint8_t *arr, tPacket *p) {
+    int index = (arr[0] - 1) * sizeof(tPacket);
+    if (index < 0) index = 0;
+    arr[index+1] = p->srcID; // source of packet - sensor ID
+    arr[index+2] = p->seqNumber[0];
+    arr[index+3] = p->seqNumber[1];
+    arr[index+4] = p->payload;
+    arr[index+5] = p->txPower;
+    arr[index+6] = p->dstID;
+    arr[index+7] = p->rssi;
+}
+
+void getPacket(uint8_t *arr, tPacket *p) {
+    int index = (arr[0] - 1) * sizeof(tPacket);
+    if (index < 0) index = 0;
+    p->srcID = arr[index+1]; // source of packet - sensor ID
+    p->seqNumber[0] = arr[index+2];
+    p->seqNumber[1] = arr[index+3];
+    p->payload = arr[index+4];
+    p->txPower = arr[index+5];
+    p->dstID = arr[index+6];
+    p->rssi = arr[index+7];
+}
+
+void copyByteArray(uint8_t *to, uint8_t *from) {
+    int i;
+    for (i = 0; i < 124; i++) {
+        to[i] = from[i];
+    }
+}
+
+void printArray(uint8_t *arr) {
+    int i;
+    for (i = 0; i < 15; i++) {
+        printf("%d", arr[i]);
+    }
+    printf("\n");
+}
+
+void newestInsert(uint8_t *arr, tPacket *p) {
+    arr[newestIndex+1] = p->srcID; // source of packet - sensor ID
+    arr[newestIndex+2] = p->seqNumber[0];
+    arr[newestIndex+3] = p->seqNumber[1];
+    arr[newestIndex+4] = p->payload;
+    arr[newestIndex+5] = p->txPower;
+    arr[newestIndex+6] = p->dstID;
+    arr[newestIndex+7] = p->rssi;
+    newestIndex += 7;
+
+}

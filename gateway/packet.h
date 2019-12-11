@@ -11,19 +11,12 @@
 #define PACKET_H_
 
 typedef struct {
-    uint8_t src;
-    uint8_t to;
+    uint8_t srcID; // source of packet - sensor ID
+    uint8_t seqNumber[2];
+    uint8_t payload;
+    uint8_t txPower;
+    uint8_t dstID;
     uint8_t rssi;
-}pair;
-
-typedef struct {
-    uint8_t packetSrcID; // source of packet - sensor ID
-    uint8_t packetID[2]; // packet identification
-    uint8_t temp;
-//    uint32_t temp;
-    uint8_t data[2]; // data to be transmitted
-    uint8_t jump_count;
-    pair jumps[3]; // packet path through the nodes
 }tPacket;
 
 void initPacket(tPacket *p);

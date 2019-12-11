@@ -6,8 +6,8 @@ SHELL = cmd.exe
 
 CG_TOOL_ROOT := C:/ti/ccs920/ccs/tools/compiler/ti-cgt-arm_18.12.3.LTS
 
-GEN_OPTS__FLAG := --cmd_file="C:/Users/Left/workspace_v9/tirtos_builds_CC1310_LAUNCHXL_release_ccs/Debug/configPkg/compiler.opt"
-GEN_CMDS__FLAG := -l"C:/Users/Left/workspace_v9/tirtos_builds_CC1310_LAUNCHXL_release_ccs/Debug/configPkg/linker.cmd"
+GEN_OPTS__FLAG := --cmd_file="C:/Users/Left/workspace_v9/tirtos_builds_CC1310_LAUNCHXL_release_ccs/Release/configPkg/compiler.opt"
+GEN_CMDS__FLAG := -l"C:/Users/Left/workspace_v9/tirtos_builds_CC1310_LAUNCHXL_release_ccs/Release/configPkg/linker.cmd"
 
 ORDERED_OBJS += \
 "./CC1310_LAUNCHXL.obj" \
@@ -153,13 +153,13 @@ all: $(OBJS) $(CMD_SRCS) $(GEN_CMDS)
 	@$(MAKE) --no-print-directory -Onone "rfListenBeforeTalk_CC1310_LAUNCHXL_ALLAN.out"
 
 dependents:
-	-cd C:/Users/Left/workspace_v9/tirtos_builds_CC1310_LAUNCHXL_release_ccs/Debug && $(MAKE) all
+	-cd C:/Users/Left/workspace_v9/tirtos_builds_CC1310_LAUNCHXL_release_ccs/Release && $(MAKE) clean all
 
 # Tool invocations
-rfListenBeforeTalk_CC1310_LAUNCHXL_ALLAN.out: $(OBJS) $(CMD_SRCS) $(GEN_CMDS) C:/Users/Left/workspace_v9/tirtos_builds_CC1310_LAUNCHXL_release_ccs/Debug/tirtos_builds_CC1310_LAUNCHXL_release_ccs.lib
+rfListenBeforeTalk_CC1310_LAUNCHXL_ALLAN.out: $(OBJS) $(CMD_SRCS) $(GEN_CMDS) C:/Users/Left/workspace_v9/tirtos_builds_CC1310_LAUNCHXL_release_ccs/Release/tirtos_builds_CC1310_LAUNCHXL_release_ccs.lib
 	@echo 'Building target: "$@"'
 	@echo 'Invoking: ARM Linker'
-	"C:/ti/ccs920/ccs/tools/compiler/ti-cgt-arm_18.12.3.LTS/bin/armcl" -mv7M3 --code_state=16 --float_support=vfplib -me --define=DeviceFamily_CC13X0 --define=CCFG_FORCE_VDDR_HH=0 --define=SUPPORT_PHY_CUSTOM --define=SUPPORT_PHY_50KBPS2GFSK --define=SUPPORT_PHY_625BPSLRM --define=SUPPORT_PHY_5KBPSSLLR -g --diag_warning=225 --diag_warning=255 --diag_wrap=off --display_error_number --gen_func_subsections=on -z -m"rfListenBeforeTalk_CC1310_LAUNCHXL_ALLAN.map" -i"C:/ti/simplelink_cc13x0_sdk_3_20_00_23/source" -i"C:/ti/simplelink_cc13x0_sdk_3_20_00_23/kernel/tirtos/packages" -i"C:/ti/ccs920/ccs/tools/compiler/ti-cgt-arm_18.12.3.LTS/lib" --diag_wrap=off --display_error_number --warn_sections --xml_link_info="rfListenBeforeTalk_CC1310_LAUNCHXL_ALLAN_linkInfo.xml" --rom_model -o "rfListenBeforeTalk_CC1310_LAUNCHXL_ALLAN.out" $(ORDERED_OBJS)
+	"C:/ti/ccs920/ccs/tools/compiler/ti-cgt-arm_18.12.3.LTS/bin/armcl" -mv7M3 --code_state=16 --float_support=vfplib -me -O2 --define=DeviceFamily_CC13X0 --define=CCFG_FORCE_VDDR_HH=0 --define=SUPPORT_PHY_CUSTOM --define=SUPPORT_PHY_50KBPS2GFSK --define=SUPPORT_PHY_625BPSLRM --define=SUPPORT_PHY_5KBPSSLLR -g --diag_warning=225 --diag_warning=255 --diag_wrap=off --display_error_number --gen_func_subsections=on -z -m"rfListenBeforeTalk_CC1310_LAUNCHXL_ALLAN.map" -i"C:/ti/simplelink_cc13x0_sdk_3_20_00_23/source" -i"C:/ti/simplelink_cc13x0_sdk_3_20_00_23/kernel/tirtos/packages" -i"C:/ti/ccs920/ccs/tools/compiler/ti-cgt-arm_18.12.3.LTS/lib" --diag_wrap=off --display_error_number --warn_sections --xml_link_info="rfListenBeforeTalk_CC1310_LAUNCHXL_ALLAN_linkInfo.xml" --rom_model -o "rfListenBeforeTalk_CC1310_LAUNCHXL_ALLAN.out" $(ORDERED_OBJS)
 	@echo 'Finished building target: "$@"'
 	@echo ' '
 
@@ -180,7 +180,7 @@ clean:
 
 .PHONY: all clean dependents
 .SECONDARY:
-C:/Users/Left/workspace_v9/tirtos_builds_CC1310_LAUNCHXL_release_ccs/Debug/tirtos_builds_CC1310_LAUNCHXL_release_ccs.lib:
+C:/Users/Left/workspace_v9/tirtos_builds_CC1310_LAUNCHXL_release_ccs/Release/tirtos_builds_CC1310_LAUNCHXL_release_ccs.lib:
 
 -include ../makefile.targets
 

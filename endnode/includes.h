@@ -11,7 +11,6 @@
 /***** Includes *****/
 /* Util headers */
 #include "packet.h"
-#include "queue.h"
 
 /* XDCtools Header files */
 #include <xdc/std.h>
