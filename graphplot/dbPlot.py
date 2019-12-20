@@ -59,9 +59,9 @@ def animate(i):
     ax2.plot(xtimedata, yrssidata, label='Nó 1')
     ax2.plot(xtimedata2, yrssidata2, label='Nó 2')
     ax2.legend()
-    plt.ylim([-45,-20])
+    plt.ylim([-60,-20])
 
 
 
-ani = animation.FuncAnimation(fig, animate, interval=1000)
+ani = animation.FuncAnimation(fig, animate, interval=15000)
 plt.show()
