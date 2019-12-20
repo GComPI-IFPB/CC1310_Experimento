@@ -59,7 +59,7 @@ def animate(i):
     ax2.plot(xtimedata, yrssidata, label='Nó 1')
     ax2.plot(xtimedata2, yrssidata2, label='Nó 2')
     ax2.legend()
-    plt.ylim([-60,-20])
+    plt.ylim([-50,-20])
 
 
 
