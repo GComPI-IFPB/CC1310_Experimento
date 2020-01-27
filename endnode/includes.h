@@ -33,6 +33,7 @@
 #include <ti/drivers/rf/RF.h>
 #include <ti/drivers/PIN.h>
 #include <ti/devices/cc13x0/driverlib/aon_batmon.h>
+#include <ti/drivers/UART.h>
 
 #include <ti/devices/DeviceFamily.h>
 #include DeviceFamily_constructPath(driverlib/rf_prop_mailbox.h)
