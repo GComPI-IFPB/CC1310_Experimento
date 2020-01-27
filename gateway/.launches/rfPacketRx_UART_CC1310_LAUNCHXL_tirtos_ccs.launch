@@ -4,7 +4,7 @@
 <stringAttribute key="com.ti.ccstudio.debug.debugModel.ATTR_PROGRAM.CC1310F128.ccxml.Texas Instruments XDS110 USB Debug Probe/Cortex_M3_0" value="${build_artifact:rfPacketRx_UART_CC1310_LAUNCHXL_tirtos_ccs}"/>
 <stringAttribute key="com.ti.ccstudio.debug.debugModel.ATTR_PROJECT.CC1310F128.ccxml.Texas Instruments XDS110 USB Debug Probe/Cortex_M3_0" value="rfPacketRx_UART_CC1310_LAUNCHXL_tirtos_ccs"/>
 <stringAttribute key="com.ti.ccstudio.debug.debugModel.ATTR_TARGET_CONFIG" value="${target_config_active_default:rfPacketRx_UART_CC1310_LAUNCHXL_tirtos_ccs}"/>
-<stringAttribute key="com.ti.ccstudio.debug.debugModel.MRU_PROGRAM.CC1310F128.ccxml.Texas Instruments XDS110 USB Debug Probe/Cortex_M3_0" value="C:/Users\Left\workspace_v9\rfPacketRx_UART_CC1310_LAUNCHXL_tirtos_ccs\Debug\rfPacketRx_UART_CC1310_LAUNCHXL_tirtos_ccs.out"/>
+<stringAttribute key="com.ti.ccstudio.debug.debugModel.MRU_PROGRAM.CC1310F128.ccxml.Texas Instruments XDS110 USB Debug Probe/Cortex_M3_0" value="C:/Users\allan\workspace_v9_2\rfPacketRx_UART_CC1310_LAUNCHXL_tirtos_ccs\Debug\rfPacketRx_UART_CC1310_LAUNCHXL_tirtos_ccs.out"/>
 <listAttribute key="org.eclipse.debug.core.MAPPED_RESOURCE_PATHS">
 <listEntry value="/rfPacketRx_UART_CC1310_LAUNCHXL_tirtos_ccs"/>
 </listAttribute>

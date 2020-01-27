@@ -1,18 +1,18 @@
 # FIXED
 
 CC1310_LAUNCHXL.obj: ../CC1310_LAUNCHXL.c
-CC1310_LAUNCHXL.obj: C:/ti/ccs901/ccs/tools/compiler/ti-cgt-arm_18.12.3.LTS/include/stdbool.h
-CC1310_LAUNCHXL.obj: C:/ti/ccs901/ccs/tools/compiler/ti-cgt-arm_18.12.3.LTS/include/stddef.h
-CC1310_LAUNCHXL.obj: C:/ti/ccs901/ccs/tools/compiler/ti-cgt-arm_18.12.3.LTS/include/_ti_config.h
-CC1310_LAUNCHXL.obj: C:/ti/ccs901/ccs/tools/compiler/ti-cgt-arm_18.12.3.LTS/include/linkage.h
-CC1310_LAUNCHXL.obj: C:/ti/ccs901/ccs/tools/compiler/ti-cgt-arm_18.12.3.LTS/include/stdint.h
-CC1310_LAUNCHXL.obj: C:/ti/ccs901/ccs/tools/compiler/ti-cgt-arm_18.12.3.LTS/include/_stdint40.h
-CC1310_LAUNCHXL.obj: C:/ti/ccs901/ccs/tools/compiler/ti-cgt-arm_18.12.3.LTS/include/sys/stdint.h
-CC1310_LAUNCHXL.obj: C:/ti/ccs901/ccs/tools/compiler/ti-cgt-arm_18.12.3.LTS/include/sys/cdefs.h
-CC1310_LAUNCHXL.obj: C:/ti/ccs901/ccs/tools/compiler/ti-cgt-arm_18.12.3.LTS/include/sys/_types.h
-CC1310_LAUNCHXL.obj: C:/ti/ccs901/ccs/tools/compiler/ti-cgt-arm_18.12.3.LTS/include/machine/_types.h
-CC1310_LAUNCHXL.obj: C:/ti/ccs901/ccs/tools/compiler/ti-cgt-arm_18.12.3.LTS/include/machine/_stdint.h
-CC1310_LAUNCHXL.obj: C:/ti/ccs901/ccs/tools/compiler/ti-cgt-arm_18.12.3.LTS/include/sys/_stdint.h
+CC1310_LAUNCHXL.obj: C:/ti/ccs920/ccs/tools/compiler/ti-cgt-arm_18.12.3.LTS/include/stdbool.h
+CC1310_LAUNCHXL.obj: C:/ti/ccs920/ccs/tools/compiler/ti-cgt-arm_18.12.3.LTS/include/stddef.h
+CC1310_LAUNCHXL.obj: C:/ti/ccs920/ccs/tools/compiler/ti-cgt-arm_18.12.3.LTS/include/_ti_config.h
+CC1310_LAUNCHXL.obj: C:/ti/ccs920/ccs/tools/compiler/ti-cgt-arm_18.12.3.LTS/include/linkage.h
+CC1310_LAUNCHXL.obj: C:/ti/ccs920/ccs/tools/compiler/ti-cgt-arm_18.12.3.LTS/include/stdint.h
+CC1310_LAUNCHXL.obj: C:/ti/ccs920/ccs/tools/compiler/ti-cgt-arm_18.12.3.LTS/include/_stdint40.h
+CC1310_LAUNCHXL.obj: C:/ti/ccs920/ccs/tools/compiler/ti-cgt-arm_18.12.3.LTS/include/sys/stdint.h
+CC1310_LAUNCHXL.obj: C:/ti/ccs920/ccs/tools/compiler/ti-cgt-arm_18.12.3.LTS/include/sys/cdefs.h
+CC1310_LAUNCHXL.obj: C:/ti/ccs920/ccs/tools/compiler/ti-cgt-arm_18.12.3.LTS/include/sys/_types.h
+CC1310_LAUNCHXL.obj: C:/ti/ccs920/ccs/tools/compiler/ti-cgt-arm_18.12.3.LTS/include/machine/_types.h
+CC1310_LAUNCHXL.obj: C:/ti/ccs920/ccs/tools/compiler/ti-cgt-arm_18.12.3.LTS/include/machine/_stdint.h
+CC1310_LAUNCHXL.obj: C:/ti/ccs920/ccs/tools/compiler/ti-cgt-arm_18.12.3.LTS/include/sys/_stdint.h
 CC1310_LAUNCHXL.obj: C:/ti/simplelink_cc13x0_sdk_3_20_00_23/source/ti/devices/cc13x0/driverlib/ioc.h
 CC1310_LAUNCHXL.obj: C:/ti/simplelink_cc13x0_sdk_3_20_00_23/source/ti/devices/cc13x0/driverlib/../inc/hw_types.h
 CC1310_LAUNCHXL.obj: C:/ti/simplelink_cc13x0_sdk_3_20_00_23/source/ti/devices/cc13x0/driverlib/../inc/../inc/hw_chip_def.h
@@ -73,13 +73,13 @@ CC1310_LAUNCHXL.obj: C:/ti/simplelink_cc13x0_sdk_3_20_00_23/source/ti/drivers/ae
 CC1310_LAUNCHXL.obj: C:/ti/simplelink_cc13x0_sdk_3_20_00_23/source/ti/drivers/TRNG.h
 CC1310_LAUNCHXL.obj: C:/ti/simplelink_cc13x0_sdk_3_20_00_23/source/ti/drivers/trng/TRNGCC26XX.h
 CC1310_LAUNCHXL.obj: C:/ti/simplelink_cc13x0_sdk_3_20_00_23/source/ti/display/Display.h
-CC1310_LAUNCHXL.obj: C:/ti/ccs901/ccs/tools/compiler/ti-cgt-arm_18.12.3.LTS/include/stdarg.h
+CC1310_LAUNCHXL.obj: C:/ti/ccs920/ccs/tools/compiler/ti-cgt-arm_18.12.3.LTS/include/stdarg.h
 CC1310_LAUNCHXL.obj: C:/ti/simplelink_cc13x0_sdk_3_20_00_23/source/ti/display/DisplayUart.h
 CC1310_LAUNCHXL.obj: C:/ti/simplelink_cc13x0_sdk_3_20_00_23/source/ti/drivers/UART.h
 CC1310_LAUNCHXL.obj: C:/ti/simplelink_cc13x0_sdk_3_20_00_23/source/ti/display/DisplaySharp.h
 CC1310_LAUNCHXL.obj: C:/ti/simplelink_cc13x0_sdk_3_20_00_23/source/ti/drivers/SPI.h
 CC1310_LAUNCHXL.obj: C:/ti/simplelink_cc13x0_sdk_3_20_00_23/source/ti/grlib/grlib.h
-CC1310_LAUNCHXL.obj: C:/ti/ccs901/ccs/tools/compiler/ti-cgt-arm_18.12.3.LTS/include/assert.h
+CC1310_LAUNCHXL.obj: C:/ti/ccs920/ccs/tools/compiler/ti-cgt-arm_18.12.3.LTS/include/assert.h
 CC1310_LAUNCHXL.obj: C:/ti/simplelink_cc13x0_sdk_3_20_00_23/source/ti/drivers/GPIO.h
 CC1310_LAUNCHXL.obj: C:/ti/simplelink_cc13x0_sdk_3_20_00_23/source/ti/drivers/gpio/GPIOCC26XX.h
 CC1310_LAUNCHXL.obj: C:/ti/simplelink_cc13x0_sdk_3_20_00_23/source/ti/drivers/I2C.h
@@ -94,7 +94,7 @@ CC1310_LAUNCHXL.obj: C:/ti/simplelink_cc13x0_sdk_3_20_00_23/source/ti/drivers/pw
 CC1310_LAUNCHXL.obj: C:/ti/simplelink_cc13x0_sdk_3_20_00_23/source/ti/drivers/rf/RF.h
 CC1310_LAUNCHXL.obj: C:/ti/simplelink_cc13x0_sdk_3_20_00_23/source/ti/devices/cc13x0/driverlib/rf_common_cmd.h
 CC1310_LAUNCHXL.obj: C:/ti/simplelink_cc13x0_sdk_3_20_00_23/source/ti/devices/cc13x0/driverlib/rf_mailbox.h
-CC1310_LAUNCHXL.obj: C:/ti/ccs901/ccs/tools/compiler/ti-cgt-arm_18.12.3.LTS/include/string.h
+CC1310_LAUNCHXL.obj: C:/ti/ccs920/ccs/tools/compiler/ti-cgt-arm_18.12.3.LTS/include/string.h
 CC1310_LAUNCHXL.obj: C:/ti/simplelink_cc13x0_sdk_3_20_00_23/source/ti/devices/cc13x0/driverlib/rf_prop_cmd.h
 CC1310_LAUNCHXL.obj: C:/ti/simplelink_cc13x0_sdk_3_20_00_23/source/ti/devices/cc13x0/driverlib/rf_ble_cmd.h
 CC1310_LAUNCHXL.obj: C:/ti/simplelink_cc13x0_sdk_3_20_00_23/source/ti/drivers/SD.h
@@ -108,18 +108,18 @@ CC1310_LAUNCHXL.obj: C:/ti/simplelink_cc13x0_sdk_3_20_00_23/source/ti/drivers/Wa
 CC1310_LAUNCHXL.obj: C:/ti/simplelink_cc13x0_sdk_3_20_00_23/source/ti/drivers/watchdog/WatchdogCC26XX.h
 
 ../CC1310_LAUNCHXL.c: 
-C:/ti/ccs901/ccs/tools/compiler/ti-cgt-arm_18.12.3.LTS/include/stdbool.h: 
-C:/ti/ccs901/ccs/tools/compiler/ti-cgt-arm_18.12.3.LTS/include/stddef.h: 
-C:/ti/ccs901/ccs/tools/compiler/ti-cgt-arm_18.12.3.LTS/include/_ti_config.h: 
-C:/ti/ccs901/ccs/tools/compiler/ti-cgt-arm_18.12.3.LTS/include/linkage.h: 
-C:/ti/ccs901/ccs/tools/compiler/ti-cgt-arm_18.12.3.LTS/include/stdint.h: 
-C:/ti/ccs901/ccs/tools/compiler/ti-cgt-arm_18.12.3.LTS/include/_stdint40.h: 
-C:/ti/ccs901/ccs/tools/compiler/ti-cgt-arm_18.12.3.LTS/include/sys/stdint.h: 
-C:/ti/ccs901/ccs/tools/compiler/ti-cgt-arm_18.12.3.LTS/include/sys/cdefs.h: 
-C:/ti/ccs901/ccs/tools/compiler/ti-cgt-arm_18.12.3.LTS/include/sys/_types.h: 
-C:/ti/ccs901/ccs/tools/compiler/ti-cgt-arm_18.12.3.LTS/include/machine/_types.h: 
-C:/ti/ccs901/ccs/tools/compiler/ti-cgt-arm_18.12.3.LTS/include/machine/_stdint.h: 
-C:/ti/ccs901/ccs/tools/compiler/ti-cgt-arm_18.12.3.LTS/include/sys/_stdint.h: 
+C:/ti/ccs920/ccs/tools/compiler/ti-cgt-arm_18.12.3.LTS/include/stdbool.h: 
+C:/ti/ccs920/ccs/tools/compiler/ti-cgt-arm_18.12.3.LTS/include/stddef.h: 
+C:/ti/ccs920/ccs/tools/compiler/ti-cgt-arm_18.12.3.LTS/include/_ti_config.h: 
+C:/ti/ccs920/ccs/tools/compiler/ti-cgt-arm_18.12.3.LTS/include/linkage.h: 
+C:/ti/ccs920/ccs/tools/compiler/ti-cgt-arm_18.12.3.LTS/include/stdint.h: 
+C:/ti/ccs920/ccs/tools/compiler/ti-cgt-arm_18.12.3.LTS/include/_stdint40.h: 
+C:/ti/ccs920/ccs/tools/compiler/ti-cgt-arm_18.12.3.LTS/include/sys/stdint.h: 
+C:/ti/ccs920/ccs/tools/compiler/ti-cgt-arm_18.12.3.LTS/include/sys/cdefs.h: 
+C:/ti/ccs920/ccs/tools/compiler/ti-cgt-arm_18.12.3.LTS/include/sys/_types.h: 
+C:/ti/ccs920/ccs/tools/compiler/ti-cgt-arm_18.12.3.LTS/include/machine/_types.h: 
+C:/ti/ccs920/ccs/tools/compiler/ti-cgt-arm_18.12.3.LTS/include/machine/_stdint.h: 
+C:/ti/ccs920/ccs/tools/compiler/ti-cgt-arm_18.12.3.LTS/include/sys/_stdint.h: 
 C:/ti/simplelink_cc13x0_sdk_3_20_00_23/source/ti/devices/cc13x0/driverlib/ioc.h: 
 C:/ti/simplelink_cc13x0_sdk_3_20_00_23/source/ti/devices/cc13x0/driverlib/../inc/hw_types.h: 
 C:/ti/simplelink_cc13x0_sdk_3_20_00_23/source/ti/devices/cc13x0/driverlib/../inc/../inc/hw_chip_def.h: 
@@ -180,13 +180,13 @@ C:/ti/simplelink_cc13x0_sdk_3_20_00_23/source/ti/drivers/aesctrdrbg/AESCTRDRBGXX
 C:/ti/simplelink_cc13x0_sdk_3_20_00_23/source/ti/drivers/TRNG.h: 
 C:/ti/simplelink_cc13x0_sdk_3_20_00_23/source/ti/drivers/trng/TRNGCC26XX.h: 
 C:/ti/simplelink_cc13x0_sdk_3_20_00_23/source/ti/display/Display.h: 
-C:/ti/ccs901/ccs/tools/compiler/ti-cgt-arm_18.12.3.LTS/include/stdarg.h: 
+C:/ti/ccs920/ccs/tools/compiler/ti-cgt-arm_18.12.3.LTS/include/stdarg.h: 
 C:/ti/simplelink_cc13x0_sdk_3_20_00_23/source/ti/display/DisplayUart.h: 
 C:/ti/simplelink_cc13x0_sdk_3_20_00_23/source/ti/drivers/UART.h: 
 C:/ti/simplelink_cc13x0_sdk_3_20_00_23/source/ti/display/DisplaySharp.h: 
 C:/ti/simplelink_cc13x0_sdk_3_20_00_23/source/ti/drivers/SPI.h: 
 C:/ti/simplelink_cc13x0_sdk_3_20_00_23/source/ti/grlib/grlib.h: 
-C:/ti/ccs901/ccs/tools/compiler/ti-cgt-arm_18.12.3.LTS/include/assert.h: 
+C:/ti/ccs920/ccs/tools/compiler/ti-cgt-arm_18.12.3.LTS/include/assert.h: 
 C:/ti/simplelink_cc13x0_sdk_3_20_00_23/source/ti/drivers/GPIO.h: 
 C:/ti/simplelink_cc13x0_sdk_3_20_00_23/source/ti/drivers/gpio/GPIOCC26XX.h: 
 C:/ti/simplelink_cc13x0_sdk_3_20_00_23/source/ti/drivers/I2C.h: 
@@ -201,7 +201,7 @@ C:/ti/simplelink_cc13x0_sdk_3_20_00_23/source/ti/drivers/pwm/PWMTimerCC26XX.h:
 C:/ti/simplelink_cc13x0_sdk_3_20_00_23/source/ti/drivers/rf/RF.h: 
 C:/ti/simplelink_cc13x0_sdk_3_20_00_23/source/ti/devices/cc13x0/driverlib/rf_common_cmd.h: 
 C:/ti/simplelink_cc13x0_sdk_3_20_00_23/source/ti/devices/cc13x0/driverlib/rf_mailbox.h: 
-C:/ti/ccs901/ccs/tools/compiler/ti-cgt-arm_18.12.3.LTS/include/string.h: 
+C:/ti/ccs920/ccs/tools/compiler/ti-cgt-arm_18.12.3.LTS/include/string.h: 
 C:/ti/simplelink_cc13x0_sdk_3_20_00_23/source/ti/devices/cc13x0/driverlib/rf_prop_cmd.h: 
 C:/ti/simplelink_cc13x0_sdk_3_20_00_23/source/ti/devices/cc13x0/driverlib/rf_ble_cmd.h: 
 C:/ti/simplelink_cc13x0_sdk_3_20_00_23/source/ti/drivers/SD.h: 

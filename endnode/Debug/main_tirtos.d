@@ -20,7 +20,7 @@ main_tirtos.obj: C:/ti/simplelink_cc13x0_sdk_3_20_00_23/kernel/tirtos/packages/t
 main_tirtos.obj: C:/ti/simplelink_cc13x0_sdk_3_20_00_23/kernel/tirtos/packages/ti/targets/arm/elf/M3.h
 main_tirtos.obj: C:/ti/simplelink_cc13x0_sdk_3_20_00_23/kernel/tirtos/packages/ti/targets/std.h
 main_tirtos.obj: C:/ti/xdctools_3_51_03_28_core/packages/xdc/cfg/global.h
-main_tirtos.obj: C:/Users/Left/workspace_v9/tirtos_builds_CC1310_LAUNCHXL_release_ccs/Debug/configPkg/package/cfg/release_pem3.h
+main_tirtos.obj: C:/Users/allan/workspace_v9_2/tirtos_builds_CC1310_LAUNCHXL_release_ccs/Debug/configPkg/package/cfg/release_pem3.h
 main_tirtos.obj: C:/ti/simplelink_cc13x0_sdk_3_20_00_23/kernel/tirtos/packages/ti/sysbios/heaps/HeapMem.h
 main_tirtos.obj: C:/ti/xdctools_3_51_03_28_core/packages/xdc/runtime/xdc.h
 main_tirtos.obj: C:/ti/xdctools_3_51_03_28_core/packages/xdc/runtime/Types.h
@@ -279,7 +279,7 @@ C:/ti/simplelink_cc13x0_sdk_3_20_00_23/kernel/tirtos/packages/ti/targets/arm/elf
 C:/ti/simplelink_cc13x0_sdk_3_20_00_23/kernel/tirtos/packages/ti/targets/arm/elf/M3.h: 
 C:/ti/simplelink_cc13x0_sdk_3_20_00_23/kernel/tirtos/packages/ti/targets/std.h: 
 C:/ti/xdctools_3_51_03_28_core/packages/xdc/cfg/global.h: 
-C:/Users/Left/workspace_v9/tirtos_builds_CC1310_LAUNCHXL_release_ccs/Debug/configPkg/package/cfg/release_pem3.h: 
+C:/Users/allan/workspace_v9_2/tirtos_builds_CC1310_LAUNCHXL_release_ccs/Debug/configPkg/package/cfg/release_pem3.h: 
 C:/ti/simplelink_cc13x0_sdk_3_20_00_23/kernel/tirtos/packages/ti/sysbios/heaps/HeapMem.h: 
 C:/ti/xdctools_3_51_03_28_core/packages/xdc/runtime/xdc.h: 
 C:/ti/xdctools_3_51_03_28_core/packages/xdc/runtime/Types.h: 

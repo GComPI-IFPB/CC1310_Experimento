@@ -99,6 +99,8 @@ void RF_init();
 void txTask_init();
 void rxTask_init();
 void createPacketTask_init();
+void UARTinit();
+void writeTask_init();
 
 
 void printArray(uint8_t *arr);
@@ -109,6 +111,7 @@ void getPacket(uint8_t *arr, tPacket *p);
 void copyPacketToArray(uint8_t *arr, tPacket *p);
 void newestInsert(uint8_t *arr, tPacket *p);
 
+
 static void rxcallback(RF_Handle h, RF_CmdHandle ch, RF_EventMask e);
 static void txcallback(RF_Handle h, RF_CmdHandle ch, RF_EventMask e);
 
@@ -116,12 +119,17 @@ static void txcallback(RF_Handle h, RF_CmdHandle ch, RF_EventMask e);
 static void createPacketFunction(UArg arg0, UArg arg1);
 static void txTaskFunction(UArg arg0, UArg arg1);
 static void rxTaskFunction(UArg arg0, UArg arg1);
+static void writeTaskFunction(UArg arg0, UArg arg1);
 
 
 /* RF object definitions */
 static RF_Object rfObject;
 static RF_Handle rfHandle;
 static RF_Params rfParams;
+
+/* UART object definitions */
+static UART_Handle uart;
+static UART_Params uartParams;
 
 /* semaphore object definitions */
 
@@ -137,6 +145,9 @@ static Semaphore_Struct semTxRxEmptyStruct, semTxRxFullStruct;
 // Valid Packet
 static Semaphore_Struct semValidFalseStruct, semValidTrueStruct;
 //static Semaphore_Handle semValidFalseHandle, semValidTrueHandle;
+// Write
+static Semaphore_Struct writeHandleStruct;
+static Semaphore_Handle writeHandle;
 
 /* Pin driver handle */
 static PIN_Handle ledPinHandle;
@@ -149,9 +160,9 @@ static uint8_t packetLength;
 static uint8_t* packetDataPointer;
 
 /* Task objects and variables */
-static Task_Params txTaskParams, rxTaskParams, createPacketParams;
-Task_Struct txTask, rxTask, createPacketTask;    /* not static so you can see in ROV */
-static uint8_t txTaskStack[TASK_STACK_SIZE], rxTaskStack[TASK_STACK_SIZE], createPacketStack[TASK_STACK_SIZE];
+static Task_Params txTaskParams, rxTaskParams, createPacketParams, writeParams;
+Task_Struct txTask, rxTask, createPacketTask, writeTask;    /* not static so you can see in ROV */
+static uint8_t txTaskStack[TASK_STACK_SIZE], rxTaskStack[TASK_STACK_SIZE], createPacketStack[TASK_STACK_SIZE], writeStack[TASK_STACK_SIZE];
 
 /* Packets and buffer */
 static tPacket packetTX, packetRX;
@@ -178,6 +189,7 @@ PIN_Config ledPinTable[] =
 
 uint8_t newestIndex;
 uint8_t initTask;
+uint8_t writeFlag;
 
 /*
  *  ======== main ========
@@ -192,9 +204,11 @@ int main(void) {
 
     newestIndex = 0;
 
+    writeFlag = 0;
+
     initTask = 1;
 
-    sensorID = 3;
+    sensorID = 2;
 
     Board_init();
 
@@ -219,10 +233,21 @@ int main(void) {
     Semaphore_Params_init(&semOwnFullParams);
     Semaphore_construct(&semOwnFullStruct, 0, &semOwnFullParams);
     semOwnFullHandle = Semaphore_handle(&semOwnFullStruct);
+    /**************************************************************/
+
+    /* WRITE */
+    Semaphore_Params writeHandleParams;
+    Semaphore_Params_init(&writeHandleParams);
+    Semaphore_construct(&writeHandleStruct, 1, &writeHandleParams);
+    writeHandle = Semaphore_handle(&writeHandleStruct);
+    /**************************************************************/
+    /* End of Semaphores constructions */
 
     RF_init();
+    UARTinit();
 
     createPacketTask_init();
+    writeTask_init();
     txTask_init();
 //    rxTask_init();
 
@@ -304,6 +329,27 @@ void RF_init() {
 //    _time = RF_getCurrentTime();
 }
 
+void UARTinit() {
+
+    UART_init();
+
+    /* Create a UART with data processing off. */
+    UART_Params_init(&uartParams);
+    uartParams.writeDataMode = UART_DATA_BINARY;
+    uartParams.readDataMode = UART_DATA_BINARY;
+    uartParams.readReturnMode = UART_RETURN_FULL;
+    uartParams.readEcho = UART_ECHO_OFF;
+    uartParams.dataLength = UART_LEN_8;
+    uartParams.baudRate = 115200;
+
+    uart = UART_open(Board_UART0, &uartParams);
+
+    if (uart == NULL) {
+         /* UART_open() failed */
+         while (1);
+    }
+}
+
 void createPacketTask_init() {
 
     Task_Params_init(&createPacketParams);
@@ -364,38 +410,36 @@ void createPacketFunction(UArg arg0, UArg arg1) {
     }
 }
 
-void txTaskFunction(UArg arg0, UArg arg1) {
-//    sleep(5);
-    while (1) {
-//        tPacket random;
-//        initPacket(&random);
-//        random.srcID = 155;
-//        random.dstID = 155;
-//        random.payload = 155;
-//        random.seqNumber[0] = 155;
-//        random.seqNumber[1] = 155;
-//        random.txPower = 155;
+void writeTaskFunction(UArg arg0, UArg arg1) {
+    while(1) {
+        /* Waiting for packet */
+        Semaphore_pend(writeHandle, BIOS_WAIT_FOREVER); // DORME THREAD
+        /* Writing packet to UART */
+        if (writeFlag) {
+            UART_write(uart, &tmpPacketBuffer, sizeof(tmpPacketBuffer));
+            writeFlag = 0;
+        }
+//        memset(packetBuffer, 0, sizeof(packetBuffer));
+    }
+}
 
+void txTaskFunction(UArg arg0, UArg arg1) {
+    sleep(5);
+    while (1) {
+        Semaphore_post(writeHandle);
         Semaphore_pend(semOwnFullHandle, BIOS_WAIT_FOREVER);
         Semaphore_pend(semHandle, BIOS_WAIT_FOREVER);
 
         uint8_t i = 0;
         uint16_t slp, momentum = 0;
-//        uint8_t qtd_tmp = 1;
-//        if (qtd_tmp < 0) qtd_tmp = 1;
-//        tmpPacketBuffer[0]++;
         for (i = 0; i < 4; i++) {
+            RF_yield(rfHandle);
             switch (i) {
             case 0:
                 packetTX.txPower = (uint8_t) 14;
-//                printArray(tmpPacketBuffer);
                 insertPacket(tmpPacketBuffer, &packetTX);
-//                copyPacketToArray(tmpPacketBuffer, &packetTX);
-//                printArray(tmpPacketBuffer);
                 copyByteArray(packetBuffer, tmpPacketBuffer);
                 tmpPacketBuffer[0]--;
-
-                RF_yield(rfHandle);
 
                 RF_cmdPropRadioDivSetup.txPower = 0xA73F;
 
@@ -411,8 +455,6 @@ void txTaskFunction(UArg arg0, UArg arg1) {
                 copyByteArray(packetBuffer, tmpPacketBuffer);
                 tmpPacketBuffer[0]--;
 
-                RF_yield(rfHandle);
-
                 RF_cmdPropRadioDivSetup.txPower = 0x50DA;
 
                 RF_runCmd(rfHandle, (RF_Op*)&RF_cmdPropTx, RF_PriorityNormal,
@@ -427,8 +469,6 @@ void txTaskFunction(UArg arg0, UArg arg1) {
                 copyByteArray(packetBuffer, tmpPacketBuffer);
                 tmpPacketBuffer[0]--;
 
-                RF_yield(rfHandle);
-
                 RF_cmdPropRadioDivSetup.txPower = 0x24CB;
 
                 RF_runCmd(rfHandle, (RF_Op*)&RF_cmdPropTx, RF_PriorityNormal,
@@ -442,8 +482,6 @@ void txTaskFunction(UArg arg0, UArg arg1) {
                 insertPacket(tmpPacketBuffer, &packetTX);
                 copyByteArray(packetBuffer, tmpPacketBuffer);
                 tmpPacketBuffer[0]--;
-
-                RF_yield(rfHandle);
 
                 RF_cmdPropRadioDivSetup.txPower = 0x18C6;
 
@@ -464,8 +502,7 @@ void txTaskFunction(UArg arg0, UArg arg1) {
 
         Semaphore_post(semOwnEmptyHandle);
 
-
-        sleep(15 - (momentum/1e6));
+        sleep(30 - (momentum/1e6));
 //        sleep(5);
     }
 }
@@ -490,6 +527,7 @@ static void rxTaskFunction(UArg arg0, UArg arg1)
     /* Enter RX mode and stay forever in RX */
 
     while (1) {
+
         Semaphore_pend(semHandle, BIOS_WAIT_FOREVER);
 
         RF_EventMask terminationReason = RF_runCmd(rfHandle, (RF_Op*)&RF_cmdPropRx,
@@ -540,17 +578,15 @@ static void rxcallback(RF_Handle h, RF_CmdHandle ch, RF_EventMask e)
                 txTask_init();
             }
 
+            packetRX.rtrID = (uint8_t) sensorID;
             packetRX.dstID = (uint8_t) sensorID;
             packetRX.rssi = (uint8_t) rxStatistics.lastRssi;
 //            printf("Valido\n");
-            int i;
-            int j;
-            int k;
+            int i, j, k;
 
             if (buffer[0] > 0 && tmpPacketBuffer[0] > 0) {
-                if ((buffer[0] + tmpPacketBuffer[0]) >= 17) {
+                if ((buffer[0] + tmpPacketBuffer[0]) >= 15) {
                     newestInsert(tmpPacketBuffer, &packetRX);
-                    tmpPacketBuffer[0]--;
                 }
                 else {
                     i = buffer[0] * sizeof(tPacket);
@@ -588,12 +624,13 @@ void insertPacket(uint8_t *arr, tPacket *p) {
     int index = arr[0] * sizeof(tPacket);
     if (index < 0) index = 0;
     arr[index+1] = p->srcID; // source of packet - sensor ID
-    arr[index+2] = p->seqNumber[0];
-    arr[index+3] = p->seqNumber[1];
-    arr[index+4] = p->payload;
-    arr[index+5] = p->txPower;
-    arr[index+6] = p->dstID;
-    arr[index+7] = p->rssi;
+    arr[index+2] = p->rtrID;
+    arr[index+3] = p->dstID;
+    arr[index+4] = p->seqNumber[0];
+    arr[index+5] = p->seqNumber[1];
+    arr[index+6] = p->payload;
+    arr[index+7] = p->txPower;
+    arr[index+8] = p->rssi;
     arr[0]++;
 }
 
@@ -601,24 +638,26 @@ void copyPacketToArray(uint8_t *arr, tPacket *p) {
     int index = (arr[0] - 1) * sizeof(tPacket);
     if (index < 0) index = 0;
     arr[index+1] = p->srcID; // source of packet - sensor ID
-    arr[index+2] = p->seqNumber[0];
-    arr[index+3] = p->seqNumber[1];
-    arr[index+4] = p->payload;
-    arr[index+5] = p->txPower;
-    arr[index+6] = p->dstID;
-    arr[index+7] = p->rssi;
+    arr[index+2] = p->rtrID;
+    arr[index+3] = p->dstID;
+    arr[index+4] = p->seqNumber[0];
+    arr[index+5] = p->seqNumber[1];
+    arr[index+6] = p->payload;
+    arr[index+7] = p->txPower;
+    arr[index+8] = p->rssi;
 }
 
 void getPacket(uint8_t *arr, tPacket *p) {
     int index = (arr[0] - 1) * sizeof(tPacket);
     if (index < 0) index = 0;
     p->srcID = arr[index+1]; // source of packet - sensor ID
-    p->seqNumber[0] = arr[index+2];
-    p->seqNumber[1] = arr[index+3];
-    p->payload = arr[index+4];
-    p->txPower = arr[index+5];
-    p->dstID = arr[index+6];
-    p->rssi = arr[index+7];
+    p->rtrID = arr[index+2];
+    p->dstID = arr[index+3];
+    p->seqNumber[0] = arr[index+4];
+    p->seqNumber[1] = arr[index+5];
+    p->payload = arr[index+6];
+    p->txPower = arr[index+7];
+    p->rssi = arr[index+8];
 }
 
 void copyByteArray(uint8_t *to, uint8_t *from) {
@@ -638,12 +677,13 @@ void printArray(uint8_t *arr) {
 
 void newestInsert(uint8_t *arr, tPacket *p) {
     arr[newestIndex+1] = p->srcID; // source of packet - sensor ID
-    arr[newestIndex+2] = p->seqNumber[0];
-    arr[newestIndex+3] = p->seqNumber[1];
-    arr[newestIndex+4] = p->payload;
-    arr[newestIndex+5] = p->txPower;
-    arr[newestIndex+6] = p->dstID;
-    arr[newestIndex+7] = p->rssi;
-    newestIndex += 7;
-
+    arr[newestIndex+2] = p->rtrID;
+    arr[newestIndex+3] = p->dstID;
+    arr[newestIndex+4] = p->seqNumber[0];
+    arr[newestIndex+5] = p->seqNumber[1];
+    arr[newestIndex+6] = p->payload;
+    arr[newestIndex+7] = p->txPower;
+    arr[newestIndex+8] = p->rssi;
+    newestIndex += 8;
+    arr[0]--;
 }

@@ -14,8 +14,7 @@ C_SRCS += \
 ../RFQueue.c \
 ../ccfg.c \
 ../main_tirtos.c \
-../packet.c \
-../rfListenBeforeTalk.c 
+../packet.c 
 
 C_DEPS += \
 ./CC1310_LAUNCHXL.d \
@@ -23,8 +22,7 @@ C_DEPS += \
 ./RFQueue.d \
 ./ccfg.d \
 ./main_tirtos.d \
-./packet.d \
-./rfListenBeforeTalk.d 
+./packet.d 
 
 OBJS += \
 ./CC1310_LAUNCHXL.obj \
@@ -32,8 +30,7 @@ OBJS += \
 ./RFQueue.obj \
 ./ccfg.obj \
 ./main_tirtos.obj \
-./packet.obj \
-./rfListenBeforeTalk.obj 
+./packet.obj 
 
 OBJS__QUOTED += \
 "CC1310_LAUNCHXL.obj" \
@@ -41,8 +38,7 @@ OBJS__QUOTED += \
 "RFQueue.obj" \
 "ccfg.obj" \
 "main_tirtos.obj" \
-"packet.obj" \
-"rfListenBeforeTalk.obj" 
+"packet.obj" 
 
 C_DEPS__QUOTED += \
 "CC1310_LAUNCHXL.d" \
@@ -50,8 +46,7 @@ C_DEPS__QUOTED += \
 "RFQueue.d" \
 "ccfg.d" \
 "main_tirtos.d" \
-"packet.d" \
-"rfListenBeforeTalk.d" 
+"packet.d" 
 
 C_SRCS__QUOTED += \
 "../CC1310_LAUNCHXL.c" \
@@ -59,7 +54,6 @@ C_SRCS__QUOTED += \
 "../RFQueue.c" \
 "../ccfg.c" \
 "../main_tirtos.c" \
-"../packet.c" \
-"../rfListenBeforeTalk.c" 
+"../packet.c" 
 
 

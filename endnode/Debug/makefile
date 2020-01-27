@@ -6,8 +6,8 @@ SHELL = cmd.exe
 
 CG_TOOL_ROOT := C:/ti/ccs920/ccs/tools/compiler/ti-cgt-arm_18.12.3.LTS
 
-GEN_OPTS__FLAG := --cmd_file="C:/Users/Left/workspace_v9/tirtos_builds_CC1310_LAUNCHXL_release_ccs/Debug/configPkg/compiler.opt"
-GEN_CMDS__FLAG := -l"C:/Users/Left/workspace_v9/tirtos_builds_CC1310_LAUNCHXL_release_ccs/Debug/configPkg/linker.cmd"
+GEN_OPTS__FLAG := --cmd_file="C:/Users/allan/workspace_v9_2/tirtos_builds_CC1310_LAUNCHXL_release_ccs/Debug/configPkg/compiler.opt"
+GEN_CMDS__FLAG := -l"C:/Users/allan/workspace_v9_2/tirtos_builds_CC1310_LAUNCHXL_release_ccs/Debug/configPkg/linker.cmd"
 
 ORDERED_OBJS += \
 "./CC1310_LAUNCHXL.obj" \
@@ -16,7 +16,6 @@ ORDERED_OBJS += \
 "./ccfg.obj" \
 "./main_tirtos.obj" \
 "./packet.obj" \
-"./rfListenBeforeTalk.obj" \
 "./smartrf_settings/smartrf_settings.obj" \
 "../CC1310_LAUNCHXL_TIRTOS.cmd" \
 -l"ti/display/lib/display.aem3" \
@@ -136,51 +135,51 @@ endif
 
 # Add inputs and outputs from these tool invocations to the build variables 
 EXE_OUTPUTS += \
-rfListenBeforeTalk_CC1310_LAUNCHXL_ALLAN.out \
+Endnode_CC1310_LAUNCHXL_tirtos_ccs.out \
 
 EXE_OUTPUTS__QUOTED += \
-"rfListenBeforeTalk_CC1310_LAUNCHXL_ALLAN.out" \
+"Endnode_CC1310_LAUNCHXL_tirtos_ccs.out" \
 
 BIN_OUTPUTS += \
-rfListenBeforeTalk_CC1310_LAUNCHXL_ALLAN.hex \
+Endnode_CC1310_LAUNCHXL_tirtos_ccs.hex \
 
 BIN_OUTPUTS__QUOTED += \
-"rfListenBeforeTalk_CC1310_LAUNCHXL_ALLAN.hex" \
+"Endnode_CC1310_LAUNCHXL_tirtos_ccs.hex" \
 
 
 # All Target
 all: $(OBJS) $(CMD_SRCS) $(GEN_CMDS)
-	@$(MAKE) --no-print-directory -Onone "rfListenBeforeTalk_CC1310_LAUNCHXL_ALLAN.out"
+	@$(MAKE) --no-print-directory -Onone "Endnode_CC1310_LAUNCHXL_tirtos_ccs.out"
 
 dependents:
-	-cd C:/Users/Left/workspace_v9/tirtos_builds_CC1310_LAUNCHXL_release_ccs/Debug && $(MAKE) all
+	-cd C:/Users/allan/workspace_v9_2/tirtos_builds_CC1310_LAUNCHXL_release_ccs/Debug && $(MAKE) all
 
 # Tool invocations
-rfListenBeforeTalk_CC1310_LAUNCHXL_ALLAN.out: $(OBJS) $(CMD_SRCS) $(GEN_CMDS) C:/Users/Left/workspace_v9/tirtos_builds_CC1310_LAUNCHXL_release_ccs/Debug/tirtos_builds_CC1310_LAUNCHXL_release_ccs.lib
+Endnode_CC1310_LAUNCHXL_tirtos_ccs.out: $(OBJS) $(CMD_SRCS) $(GEN_CMDS) C:/Users/allan/workspace_v9_2/tirtos_builds_CC1310_LAUNCHXL_release_ccs/Debug/tirtos_builds_CC1310_LAUNCHXL_release_ccs.lib
 	@echo 'Building target: "$@"'
 	@echo 'Invoking: ARM Linker'
-	"C:/ti/ccs920/ccs/tools/compiler/ti-cgt-arm_18.12.3.LTS/bin/armcl" -mv7M3 --code_state=16 --float_support=vfplib -me --define=DeviceFamily_CC13X0 --define=CCFG_FORCE_VDDR_HH=0 --define=SUPPORT_PHY_CUSTOM --define=SUPPORT_PHY_50KBPS2GFSK --define=SUPPORT_PHY_625BPSLRM --define=SUPPORT_PHY_5KBPSSLLR -g --diag_warning=225 --diag_warning=255 --diag_wrap=off --display_error_number --gen_func_subsections=on -z -m"rfListenBeforeTalk_CC1310_LAUNCHXL_ALLAN.map" -i"C:/ti/simplelink_cc13x0_sdk_3_20_00_23/source" -i"C:/ti/simplelink_cc13x0_sdk_3_20_00_23/kernel/tirtos/packages" -i"C:/ti/ccs920/ccs/tools/compiler/ti-cgt-arm_18.12.3.LTS/lib" --diag_wrap=off --display_error_number --warn_sections --xml_link_info="rfListenBeforeTalk_CC1310_LAUNCHXL_ALLAN_linkInfo.xml" --rom_model -o "rfListenBeforeTalk_CC1310_LAUNCHXL_ALLAN.out" $(ORDERED_OBJS)
+	"C:/ti/ccs920/ccs/tools/compiler/ti-cgt-arm_18.12.3.LTS/bin/armcl" -mv7M3 --code_state=16 --float_support=vfplib -me --define=DeviceFamily_CC13X0 --define=CCFG_FORCE_VDDR_HH=0 --define=SUPPORT_PHY_CUSTOM --define=SUPPORT_PHY_50KBPS2GFSK --define=SUPPORT_PHY_625BPSLRM --define=SUPPORT_PHY_5KBPSSLLR -g --diag_warning=225 --diag_warning=255 --diag_wrap=off --display_error_number --gen_func_subsections=on -z -m"Endnode_CC1310_LAUNCHXL_tirtos_ccs.map" -i"C:/ti/simplelink_cc13x0_sdk_3_20_00_23/source" -i"C:/ti/simplelink_cc13x0_sdk_3_20_00_23/kernel/tirtos/packages" -i"C:/ti/ccs920/ccs/tools/compiler/ti-cgt-arm_18.12.3.LTS/lib" --diag_wrap=off --display_error_number --warn_sections --xml_link_info="Endnode_CC1310_LAUNCHXL_tirtos_ccs_linkInfo.xml" --rom_model -o "Endnode_CC1310_LAUNCHXL_tirtos_ccs.out" $(ORDERED_OBJS)
 	@echo 'Finished building target: "$@"'
 	@echo ' '
 
-rfListenBeforeTalk_CC1310_LAUNCHXL_ALLAN.hex: $(EXE_OUTPUTS)
+Endnode_CC1310_LAUNCHXL_tirtos_ccs.hex: $(EXE_OUTPUTS)
 	@echo 'Building files: $(strip $(EXE_OUTPUTS__QUOTED))'
 	@echo 'Invoking: ARM Hex Utility'
-	"C:/ti/ccs920/ccs/tools/compiler/ti-cgt-arm_18.12.3.LTS/bin/armhex"  -o "rfListenBeforeTalk_CC1310_LAUNCHXL_ALLAN.hex" $(EXE_OUTPUTS__QUOTED)
+	"C:/ti/ccs920/ccs/tools/compiler/ti-cgt-arm_18.12.3.LTS/bin/armhex"  -o "Endnode_CC1310_LAUNCHXL_tirtos_ccs.hex" $(EXE_OUTPUTS__QUOTED)
 	@echo 'Finished building: $(strip $(EXE_OUTPUTS__QUOTED))'
 	@echo ' '
 
 # Other Targets
 clean:
 	-$(RM) $(BIN_OUTPUTS__QUOTED)$(EXE_OUTPUTS__QUOTED)
-	-$(RM) "CC1310_LAUNCHXL.obj" "CC1310_LAUNCHXL_fxns.obj" "RFQueue.obj" "ccfg.obj" "main_tirtos.obj" "packet.obj" "rfListenBeforeTalk.obj" "smartrf_settings\smartrf_settings.obj" 
-	-$(RM) "CC1310_LAUNCHXL.d" "CC1310_LAUNCHXL_fxns.d" "RFQueue.d" "ccfg.d" "main_tirtos.d" "packet.d" "rfListenBeforeTalk.d" "smartrf_settings\smartrf_settings.d" 
+	-$(RM) "CC1310_LAUNCHXL.obj" "CC1310_LAUNCHXL_fxns.obj" "RFQueue.obj" "ccfg.obj" "main_tirtos.obj" "packet.obj" "smartrf_settings\smartrf_settings.obj" 
+	-$(RM) "CC1310_LAUNCHXL.d" "CC1310_LAUNCHXL_fxns.d" "RFQueue.d" "ccfg.d" "main_tirtos.d" "packet.d" "smartrf_settings\smartrf_settings.d" 
 	-@echo 'Finished clean'
 	-@echo ' '
 
 .PHONY: all clean dependents
 .SECONDARY:
-C:/Users/Left/workspace_v9/tirtos_builds_CC1310_LAUNCHXL_release_ccs/Debug/tirtos_builds_CC1310_LAUNCHXL_release_ccs.lib:
+C:/Users/allan/workspace_v9_2/tirtos_builds_CC1310_LAUNCHXL_release_ccs/Debug/tirtos_builds_CC1310_LAUNCHXL_release_ccs.lib:
 
 -include ../makefile.targets
 
