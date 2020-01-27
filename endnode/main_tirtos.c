@@ -615,6 +615,7 @@ static void rxcallback(RF_Handle h, RF_CmdHandle ch, RF_EventMask e)
                 copyPacketToArray(tmpPacketBuffer, &packetRX);
             }
             PIN_setOutputValue(ledPinHandle, Board_PIN_LED1, !PIN_getOutputValue(Board_PIN_LED1));
+            writeFlag = 1;
         }
         RFQueue_nextEntry();
     }
