@@ -18,7 +18,11 @@ print("Lista de tabelas:")
 for i in range(len(rs)):
     print(i, rs[i])
 
-query = input("\nDigite a query: ")
-rs = client.query(query)
-for i in rs.get_points():
-    print(i)
+
+while True:
+    print("Query para mostrar quantidade de pacotes na tabela: select count(*) from ~nome da tabela")
+    print("Use ctrl+c para encerrar o programa")
+    query = input("\nDigite a query: ")
+    rs = client.query(query)
+    for i in rs.get_points():
+        print(i)
