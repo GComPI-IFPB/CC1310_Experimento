@@ -556,21 +556,13 @@ static void rxcallback(RF_Handle h, RF_CmdHandle ch, RF_EventMask e)
         /* Handle the packet data, located at &currentDataEntry->data:
          * - Length is the first byte with the current configuration
          * - Data starts from the second byte */
-//        printf("RX - ");
-//        printArray(&currentDataEntry->data + 1);
-//        printf("TMP - ");
-//        printArray(tmpPacketBuffer);
         packetLength      = *(uint8_t*)(&currentDataEntry->data);
         packetDataPointer =  (uint8_t*)(&currentDataEntry->data + 1);
 
         /* Copy the payload + the status byte to the packet variable */
         memcpy(buffer, packetDataPointer, (packetLength + 1));
-//        printf("B - ");
-//        printArray(buffer);
 
         getPacket(buffer, &packetRX);
-//        printf("%d\n", packetRX.srcID);
-
         if (packetRX.srcID > sensorID) {
 
             if (packetRX.srcID == (sensorID + 1) && initTask) {
