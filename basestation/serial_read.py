@@ -9,7 +9,7 @@ def convert(byte):
         return (256-byte)*(-1)
     return byte
 
-client = InfluxDBClient(host='150.165.254.119', username='allan', password='020898', database='CC1310_Packets', port=8086)
+client = InfluxDBClient(host='IP', username='user', password='pass', database='DB', port=8086)
 with sl.Serial("/dev/ttyACM0", 115200) as sr:  # GCOMPI ROOT
     while True:
         string = sr.read(124)
